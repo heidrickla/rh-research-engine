@@ -155,11 +155,31 @@ jobs:
       # Windows leg of this job, and it was twice the Linux one at 24 minutes
       # against 11. The suite is parallel-safe by construction rather than by
       # luck: every test that writes reads repo state and writes into a tmp
-      # workspace, so there is no shared mutable path to race on. `-p
-      # no:randomly` is NOT set -- order independence is worth keeping under
-      # test, and xdist distributing by file already varies the order.
+      # workspace, so there is no shared mutable path to race on. Order
+      # independence is kept under test by xdist distributing by file, which
+      # varies the order without depending on an undeclared plugin.
       - name: Test
-        run: pytest -q -n auto
+        # PLUGIN AUTOLOAD IS OFF, AND THAT IS THE POINT. pytest loads every
+        # plugin it finds installed, and `setup-python`'s toolcache is a Docker
+        # volume SHARED BETWEEN REPOSITORIES on this runner. Another repo's job
+        # installed aiohttp/aiodns into the py3.13 toolcache -- 321 packages
+        # against py3.12's 67 -- and our suite then died in plugin autoload with
+        # `AttributeError: module 'pycares' has no attribute
+        # 'ares_query_a_result'`, before a line of project code ran. py3.12 was
+        # unaffected only because nobody had contaminated it yet.
+        #
+        # So the suite's behaviour was a function of what a DIFFERENT repository
+        # installed. Disabling autoload and naming the one plugin we declare
+        # makes it a function of `pyproject.toml` instead.
+        #
+        # The comment below used to say `-p no:randomly` is deliberately unset
+        # so order independence stays under test. `pytest-randomly` is NOT a
+        # declared dependency, so that only ever held when the environment
+        # happened to supply it -- which is the same defect. xdist distributing
+        # by file still varies order; if randomization is wanted, declare it.
+        env:
+          PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
+        run: pytest -q -n auto -p xdist
 
       # Durable memory is the authoritative research record. If its seal, its
       # status vocabulary, or its dependency graph is broken, nothing
