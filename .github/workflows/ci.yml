@@ -389,8 +389,18 @@ jobs:
     name: Every formula reads
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      # v5/v6 to match every other job. This one alone was on v4/v5 -- no reason
+      # recorded, and one action pinned two ways in one workflow is a difference
+      # that looks deliberate and is not. Dependabot proposed bumping only these
+      # stragglers to v7, which would have left three versions of `checkout` in
+      # the file instead of two.
+      #
+      # NOT v7, which is current: these versions are the ones proven to run on
+      # BOTH forges today, and the self-hosted runner's act implementation is
+      # the constraint Dependabot cannot see. Moving to v7 is a separate change
+      # that has to be watched on gitea.
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - run: pip install -e ".[dev]"
