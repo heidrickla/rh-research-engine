@@ -1,0 +1,36 @@
+# Line endings are a determinism concern here, not a style preference.
+#
+# This repository hashes content directly. `MathCertificate.certificate_hash`,
+# `DreEvidenceEnvelope.payload_hash`, and the formula-index canonical digests
+# are all computed over exact bytes, and `write_dre_experiment` produces the
+# artifact that DRE consumes. DRE in turn computes `ModelHash` over the raw
+# bytes of a pack, so the CRLF and LF versions of the same file are different
+# models.
+#
+# A Windows checkout with `core.autocrlf=true` and no pin here would produce
+# different hashes from a Linux CI checkout of the same commit, and every
+# cross-machine replay would fail while every file looked identical in every
+# editor.
+#
+# So: normalise everything to LF in the repository and in the working tree.
+
+* text=auto eol=lf
+
+# Research state, DRE artifacts, and model packs are hashed byte-for-byte.
+# Pinning them explicitly means a future change to the blanket rule above
+# cannot quietly change what a stored hash refers to.
+*.json text eol=lf
+*.jsonl text eol=lf
+*.yaml text eol=lf
+*.yml  text eol=lf
+
+*.py   text eol=lf
+*.toml text eol=lf
+*.md   text eol=lf
+*.cfg  text eol=lf
+
+# Never touched.
+*.png  binary
+*.jpg  binary
+*.pdf  binary
+*.bin  binary

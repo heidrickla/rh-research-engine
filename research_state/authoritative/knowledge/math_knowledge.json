@@ -1,0 +1,423 @@
+[
+  {
+    "dependencies": [],
+    "domain": "foundations",
+    "id": "K001",
+    "statement": "Use z=s-1/2 and Xi(z)=xi(1/2+z); Xi is even. A nontrivial zero is z=eta+i*gamma, with RH equivalent to eta=0 for every zero.",
+    "status": "exact",
+    "title": "Centered zeta coordinate"
+  },
+  {
+    "dependencies": [
+      "K001"
+    ],
+    "domain": "spectral",
+    "id": "K002",
+    "statement": "Define D(E)=Xi(sqrt(-E)). A zero rho=1/2+eta+i*gamma maps to E=gamma^2-eta^2-2i*eta*gamma. RH is equivalent to all zero energies being positive real.",
+    "status": "derived_symbolic",
+    "title": "Squared-energy map"
+  },
+  {
+    "dependencies": [
+      "K002"
+    ],
+    "domain": "moment_problem",
+    "id": "K003",
+    "statement": "If the squared energies are positive real, m(E)=-D'(E)/D(E) is Stieltjes/Herglotz and inverse-energy moments generate PSD Hankel matrices.",
+    "status": "derived_symbolic",
+    "title": "Inverse-energy Stieltjes moments"
+  },
+  {
+    "dependencies": [
+      "K003"
+    ],
+    "domain": "moment_problem",
+    "id": "K004",
+    "statement": "For an isolated conjugate pair E=r exp(+-i theta), the first 2x2 inverse-energy Hankel determinant is strictly negative when theta is nonzero.",
+    "status": "exact_algebra",
+    "title": "Complex energy pair forces Hankel negativity"
+  },
+  {
+    "dependencies": [
+      "K001"
+    ],
+    "domain": "scattering",
+    "id": "K005",
+    "statement": "For omega>0 define Theta_omega(z)=xi(1/2-omega-iz)/xi(1/2+omega-iz). On the real boundary its modulus is one unconditionally.",
+    "status": "exact",
+    "title": "Zeta scattering ratio"
+  },
+  {
+    "dependencies": [
+      "K005"
+    ],
+    "domain": "scattering",
+    "id": "K006",
+    "statement": "An off-line zero rho=beta+i gamma creates a pole z=-gamma+i(beta-1/2-omega) of Theta_omega. It enters the upper half-plane when beta-1/2>omega.",
+    "status": "exact_algebra",
+    "title": "Off-line zero becomes scattering pole"
+  },
+  {
+    "dependencies": [
+      "K005",
+      "K006"
+    ],
+    "domain": "scattering",
+    "id": "K007",
+    "statement": "The Cayley transform M_omega=i(1+Theta_omega)/(1-Theta_omega) converts Schur contractivity into Herglotz/Pick positivity. A full all-omega passivity criterion is RH-equivalent in the intended canonical-system setting.",
+    "status": "derived_symbolic",
+    "title": "Cayley passivity formulation"
+  },
+  {
+    "dependencies": [
+      "K005"
+    ],
+    "domain": "no_go",
+    "id": "K008",
+    "statement": "Boundary unitarity alone cannot imply RH because off-line zeros can be hidden in Blaschke/all-pass factors with unit boundary modulus.",
+    "status": "false_route",
+    "title": "Boundary unitarity no-go"
+  },
+  {
+    "dependencies": [
+      "K001"
+    ],
+    "domain": "hardy_space",
+    "id": "K009",
+    "statement": "For a=eta+i gamma in the right half-plane, B_a(z)=(z-a)/(z+conj(a)) is all-pass on the imaginary axis and its phase derivative is a positive Lorentzian.",
+    "status": "exact",
+    "title": "Blaschke factor for an off-line zero"
+  },
+  {
+    "dependencies": [
+      "K009"
+    ],
+    "domain": "hardy_space",
+    "id": "K010",
+    "statement": "At probe depth x>0, an off-line zero contributes the positive Green potential g_x(a)=-log|B_a(x)|.",
+    "status": "exact",
+    "title": "Blaschke Green potential"
+  },
+  {
+    "dependencies": [
+      "K010"
+    ],
+    "domain": "hardy_space",
+    "id": "K011",
+    "statement": "The Balazard-Saias-Yor criterion expresses a critical-line logarithmic integral as a positive sum over zeros with beta>1/2, and RH is equivalent to its vanishing.",
+    "status": "known",
+    "title": "BSY positive defect"
+  },
+  {
+    "dependencies": [
+      "K001"
+    ],
+    "domain": "inertia",
+    "id": "K012",
+    "statement": "A simple conjugate off-line zero pair contributes a real rank-two residue block with signature (1,1); m distinct simple pairs give exact finite residue signature (m,m) under linear independence of the exponential modes.",
+    "status": "exact_algebra",
+    "title": "Pair residue inertia"
+  },
+  {
+    "dependencies": [
+      "K001",
+      "K012"
+    ],
+    "domain": "inertia",
+    "id": "K013",
+    "statement": "Off-line displacement eta produces paired growth/decay factors whose symmetric defect is cosh(eta T); residue norms grow exponentially like exp(2 eta T).",
+    "status": "exact_algebra",
+    "title": "Hyperbolic defect growth"
+  },
+  {
+    "dependencies": [
+      "K001"
+    ],
+    "domain": "xi_gradient",
+    "id": "K014",
+    "statement": "A symmetric off-line pair at 1/2+-eta+i gamma contributes a horizontal log|xi| gradient term negative exactly inside a disk of radius |eta| centered on the critical line at height gamma.",
+    "status": "exact_algebra",
+    "title": "Horizontal gradient defect disk"
+  },
+  {
+    "dependencies": [
+      "K001"
+    ],
+    "domain": "prime_error",
+    "id": "K015",
+    "statement": "For E(x)=psi(x)-x, M(w)=int_1^infinity E(x)^2 x^{-w-1} dx has convergence abscissa 2 Theta, where Theta=sup Re rho. Thus RH iff the critical finite-volume Green energy grows only logarithmically.",
+    "status": "known_or_standard_consequence",
+    "title": "Prime Green energy"
+  },
+  {
+    "dependencies": [
+      "K015"
+    ],
+    "domain": "prime_error",
+    "id": "K016",
+    "statement": "With b_n=Lambda(n)-1 and A_N=psi(N)-N, summation by parts gives a positive quadratic Green energy with kernel max(m,n)^(-s).",
+    "status": "exact",
+    "title": "Discrete Green quadratic form"
+  },
+  {
+    "dependencies": [
+      "K016"
+    ],
+    "domain": "prime_correlation",
+    "id": "K017",
+    "statement": "The diagonal weighted prime noise is asymptotically 1/2 log^2 X, so RH-scale total Green energy requires the off-diagonal covariance to cancel that leading term.",
+    "status": "derived_symbolic",
+    "title": "Diagonal shot-noise cancellation requirement"
+  },
+  {
+    "dependencies": [
+      "K017"
+    ],
+    "domain": "prime_correlation",
+    "id": "K018",
+    "statement": "The weighted average of the Hardy-Littlewood singular series has a universal -1/2 log H secondary bias, which supplies exactly the leading anti-correlation needed to screen diagonal shot noise in the model.",
+    "status": "known_model_input",
+    "title": "Hardy-Littlewood secondary screening"
+  },
+  {
+    "dependencies": [
+      "K018",
+      "K025"
+    ],
+    "domain": "prime_correlation",
+    "id": "K019",
+    "statement": "Define the weighted actual-minus-Hardy-Littlewood pair-correlation remainder R_q(X). A rigorous subpower bound R_q(X)=X^{o(1)} for one fixed q, together with the controlled model contribution, would imply RH.",
+    "status": "research_target",
+    "title": "Screening remainder target"
+  },
+  {
+    "dependencies": [
+      "K015"
+    ],
+    "domain": "control",
+    "id": "K020",
+    "statement": "In T=log x coordinates, h(T)=e^{-T/2}(psi(e^T)-e^T) satisfies a first-order stable filter equation driven by the centered prime impulse train.",
+    "status": "exact_distributional",
+    "title": "Prime error as stable-filter output"
+  },
+  {
+    "dependencies": [
+      "K020"
+    ],
+    "domain": "hilbert_polya",
+    "id": "K021",
+    "statement": "Under RH the normalized prime-error state h(T) is B^2 almost periodic with frequencies gamma, and translations are unitary with generator P=-i d/dT. RH failure corresponds to an exponentially growing mode that is not in the mean-square Hilbert space.",
+    "status": "conditional_on_RH_standard",
+    "title": "Besicovitch translation formulation"
+  },
+  {
+    "dependencies": [
+      "K001"
+    ],
+    "domain": "safe_data",
+    "id": "K022",
+    "statement": "For q>0, L_q(X)=sum_{n>=2}(Lambda(n)-1) exp(-(n/X)^q) has Mellin multiplier Gamma(s/q)/q; a zero rho contributes -(m_rho/q)Gamma(rho/q)X^rho. The exact endpoint L_q(X)=O(X^1/2) is RH-equivalent for fixed q.",
+    "status": "classical_family_repackaged",
+    "title": "Safe Gamma filter"
+  },
+  {
+    "dependencies": [
+      "K022"
+    ],
+    "domain": "safe_data",
+    "id": "K023",
+    "statement": "Differentiating the safe Gamma filter gives a localized shell S_q(X)=q sum (Lambda(n)-1)(n/X)^q exp(-(n/X)^q). Its log-space kernel is a probability density and its Fourier transform is Gamma(1-i omega/q).",
+    "status": "exact",
+    "title": "Localized Gamma shell"
+  },
+  {
+    "dependencies": [
+      "K023"
+    ],
+    "domain": "safe_data",
+    "id": "K024",
+    "statement": "The localized shell has log-prime width about 1/q and effective zero-frequency bandwidth about q, giving Delta(log n) Delta(gamma) of order one.",
+    "status": "asymptotic_derived",
+    "title": "Prime-zero uncertainty relation"
+  },
+  {
+    "dependencies": [
+      "K023"
+    ],
+    "domain": "prime_correlation",
+    "id": "K025",
+    "statement": "The global weighted L2 energy of the localized shell is a prime-pair quadratic form with an explicit positive sech kernel. q is exactly a multiplicative correlation-resolution parameter.",
+    "status": "exact_calculus",
+    "title": "Exact multiplicative pair kernel"
+  },
+  {
+    "dependencies": [
+      "K025",
+      "K015"
+    ],
+    "domain": "prime_correlation",
+    "id": "K026",
+    "statement": "Adding an exponential regulator delta gives an explicit positive multiplicative kernel K_{q,delta}; its convergence threshold is delta_c=2 Theta-1 and is independent of q.",
+    "status": "exact_calculus",
+    "title": "Two-parameter susceptibility kernel"
+  },
+  {
+    "dependencies": [
+      "K001"
+    ],
+    "domain": "safe_values",
+    "id": "K027",
+    "statement": "Define c_j=-zeta'/zeta(2j+2)-zeta(2j+2)+1 and d_k=sum_{j=0}^k (-1)^j binom(k,j)c_j. Nörlund-Rice gives zero terms proportional to k! Gamma(1-rho/2)/Gamma(k+2-rho/2).",
+    "status": "derived_symbolic",
+    "title": "Safe binomial sequence"
+  },
+  {
+    "dependencies": [
+      "K027"
+    ],
+    "domain": "safe_values",
+    "id": "K028",
+    "statement": "All trivial-zero contributions to d_k sum to -1/(2k(k+1)); therefore corrected d_tilde_k=d_k+1/(2k(k+1)) isolates the nontrivial-zero spectrum to leading asymptotic order.",
+    "status": "exact_algebra",
+    "title": "Trivial-zero correction"
+  },
+  {
+    "dependencies": [
+      "K027",
+      "K028"
+    ],
+    "domain": "safe_values",
+    "id": "K029",
+    "statement": "Because zeta'/zeta has only simple poles even at multiple zeros and the Gamma coefficients decay exponentially in height, RH should be equivalent to bounded k^{3/4} d_tilde_k, without an epsilon or simplicity assumption.",
+    "status": "derived_symbolic_needs_external_check",
+    "title": "Exact endpoint safe-binomial criterion"
+  },
+  {
+    "dependencies": [
+      "K029"
+    ],
+    "domain": "safe_values",
+    "id": "K030",
+    "statement": "The generating function of corrected d_k has a single boundary point z=1 whose indicial exponents are rho/2; after tau=-log(1-z), RH corresponds to purely oscillatory dilation modes.",
+    "status": "derived_symbolic",
+    "title": "Safe-binomial boundary singularity"
+  },
+  {
+    "dependencies": [
+      "K001"
+    ],
+    "domain": "theta",
+    "id": "K031",
+    "statement": "Normalize the Riemann theta kernel to a symmetric random variable X. Its moment generating function is xi(1/2+z)/xi(1/2); RH is exactly the Lee-Yang property that all zeros of this MGF are purely imaginary.",
+    "status": "known_equivalence_framework",
+    "title": "Theta Lee-Yang formulation"
+  },
+  {
+    "dependencies": [
+      "K031"
+    ],
+    "domain": "no_go",
+    "id": "K032",
+    "statement": "The proposed infinite iterated curvature/log-concavity hierarchy fails for the actual Riemann theta kernel at higher iteration; it cannot serve as the RH route.",
+    "status": "false_route",
+    "title": "Iterated theta log-concavity fails"
+  },
+  {
+    "dependencies": [
+      "K031"
+    ],
+    "domain": "quantum",
+    "id": "K033",
+    "statement": "Theta completion yields an explicit positive SUSY Schrödinger Hamiltonian H_+=-D^2+1/4+V_R=A^dagger A, but Xi is an interaction form factor rather than its spectral determinant.",
+    "status": "exact_construction",
+    "title": "SUSY theta Hamiltonian"
+  },
+  {
+    "dependencies": [
+      "K033"
+    ],
+    "domain": "no_go",
+    "id": "K034",
+    "statement": "Constructing a positive or self-adjoint Hamiltonian from theta data is insufficient to prove RH; de Bruijn-Newman deformations can preserve positivity while permitting nonreal zeros.",
+    "status": "false_route",
+    "title": "Positive Hamiltonian no-go"
+  },
+  {
+    "dependencies": [
+      "K001"
+    ],
+    "domain": "automorphic",
+    "id": "K035",
+    "statement": "The conjugated radial modular-cusp operator is -D_x^2+1/4, and modular scattering contains zeta zeros as resonances. An off-line zero splits the paired resonance widths around the critical value.",
+    "status": "known_framework",
+    "title": "Modular cusp resonance map"
+  },
+  {
+    "dependencies": [
+      "K035"
+    ],
+    "domain": "automorphic",
+    "id": "K036",
+    "statement": "For paired off-line modular resonances, normalized cusp coherence satisfies coherence^2=1-4 eta^2, so RH corresponds to perfect coherence in this two-mode model.",
+    "status": "derived_symbolic",
+    "title": "Cusp coherence defect"
+  },
+  {
+    "dependencies": [
+      "K001"
+    ],
+    "domain": "automorphic",
+    "id": "K037",
+    "statement": "For an off-line functional-equation pair with conjugate nonreal Hecke eigenvalues, any nondegenerate invariant Hermitian form has signature (1,1); a positive invariant metric would force the relevant eigenvalues real and hence eta=0.",
+    "status": "exact_algebra_in_model",
+    "title": "Hecke invariant metric obstruction"
+  },
+  {
+    "dependencies": [
+      "K037"
+    ],
+    "domain": "no_go",
+    "id": "K038",
+    "statement": "Toroidal Eisenstein periods select zeta zeros but do not constrain Re rho; toroidality alone cannot imply RH.",
+    "status": "false_route",
+    "title": "Toroidality alone no-go"
+  },
+  {
+    "dependencies": [
+      "K015"
+    ],
+    "domain": "function_space",
+    "id": "K039",
+    "statement": "For G(z)=sum_{n>=1}(psi(n)-n)z^n and weighted coefficient norm sum |A_n|^2(n+1)^alpha, the critical smoothness exponent is alpha_*=-1-2 Theta; RH corresponds to alpha_*=-2.",
+    "status": "derived_from_standard_exponent_relation",
+    "title": "Weighted-Dirichlet critical index"
+  },
+  {
+    "dependencies": [
+      "K015"
+    ],
+    "domain": "moment_problem",
+    "id": "K040",
+    "statement": "At a safely convergent regulator, positive log-moments of the prime-error energy encode the distance to the rightmost singularity. Their factorial root growth recovers Theta.",
+    "status": "derived_symbolic",
+    "title": "Safe-point factorial moments"
+  },
+  {
+    "dependencies": [
+      "K015"
+    ],
+    "domain": "prime_error",
+    "id": "K041",
+    "statement": "Unit-width logarithmic block energies W_k have exponential growth rate 2 Theta-1. RH is equivalent to subexponential block energy.",
+    "status": "derived_from_abscissa",
+    "title": "Log-window energy criterion"
+  },
+  {
+    "dependencies": [],
+    "domain": "methodology",
+    "id": "K042",
+    "statement": "Numerical agreement, fitted exponents, synthetic-spectrum consistency, and LLM-generated derivations are evidence only. They cannot promote an RH-equivalent or new analytic claim to proved without a rigorous proof/certificate and independent review.",
+    "status": "governance",
+    "title": "Research epistemic rule"
+  }
+]

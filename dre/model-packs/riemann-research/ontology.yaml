@@ -1,0 +1,51 @@
+entities:
+  research_run:
+    properties:
+      experiment_name:
+        type: symbol
+      claim_id:
+        type: symbol
+      claim_effect:
+        type: symbol
+        values: [supports, contradicts, neutral]
+      evidence_class:
+        type: symbol
+        values: [numerical, rigorous-numerical, symbolic, proved, known, heuristic, counterexample]
+      method_family:
+        type: symbol
+      worker_version:
+        type: symbol
+      payload_hash:
+        type: symbol
+      provenance_hash:
+        type: symbol
+      assumption_count:
+        type: integer
+      assumptions_present:
+        type: boolean
+      primary_metric_name:
+        type: symbol
+      primary_metric_scaled:
+        type: integer
+      primary_metric_scale:
+        type: integer
+      theta_upper_ppb:
+        type: integer
+      bound_exponent_ppb:
+        type: integer
+      rh_equivalent:
+        type: boolean
+      counterexample_found:
+        type: boolean
+      independently_verified:
+        type: boolean
+
+      # DRE-derived epistemic outputs.
+      proof_status:
+        type: symbol
+        values: [not-proved, needs-formal-proof, proved]
+      candidate_status:
+        type: symbol
+        values: [active, refuted, blocked-rh-equivalence]
+      promotion_allowed:
+        type: boolean

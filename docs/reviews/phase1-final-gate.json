@@ -1,0 +1,272 @@
+{
+  "activation_requirements": [
+    "Authenticated receipt verification: a signature checked against a key held outside this repository, retrieval from a sealed DRE decision store addressed by dre_decision_hash, or deterministic replay reproducing dre_proof_hash.",
+    "A pinned model-pack hash and a pinned engine fingerprint.",
+    "Proof artifact retrieval or replay, not merely a reference to one.",
+    "A documented trust-root rotation procedure.",
+    "A documented revocation procedure.",
+    "Negative tests for stale signatures and stale receipts.",
+    "Adding a fingerprint to the set literal is necessary and NOT sufficient."
+  ],
+  "baseline_sha": "74827dbda6c897ea68e3db025a6fd7b83ec97226",
+  "baseline_tag": "rh-lab-v1-baseline-df7016d",
+  "branch": "fix/formulas-parse-correctly",
+  "ci": {
+    "note": "generated locally; no CI run to cite",
+    "under_ci": false
+  },
+  "contract_versions": {
+    "artifact_schema_version": "1",
+    "package": "0.12.0",
+    "property_graph_schema_version": "1",
+    "schema_snapshot_enums": 26,
+    "schema_snapshot_models": 81
+  },
+  "failed_gates": [],
+  "gates": [
+    {
+      "command": "python tools/check-line-endings.py",
+      "detail": "line endings: OK (tracked text files are LF)",
+      "key": "line-endings",
+      "passed": true,
+      "skipped": false,
+      "subset_of_suite": false,
+      "tests": null,
+      "title": "Line endings",
+      "why": "A line ending is part of a hash here: certificate hashes, DRE payload hashes, and formula-index digests are computed over exact bytes, so CRLF and LF copies of one artifact are two different models."
+    },
+    {
+      "command": "python -m ruff check .",
+      "detail": "All checks passed!",
+      "key": "lint",
+      "passed": true,
+      "skipped": false,
+      "subset_of_suite": false,
+      "tests": null,
+      "title": "Ruff",
+      "why": "Style is not the point; an unused import or an undefined name is usually the visible end of a half-finished edit."
+    },
+    {
+      "command": "python -m pytest -q",
+      "detail": "748 passed in 51.53s",
+      "key": "tests",
+      "passed": true,
+      "skipped": false,
+      "subset_of_suite": false,
+      "tests": 748,
+      "title": "Full test suite",
+      "why": "Every behavioural and adversarial invariant in the repository."
+    },
+    {
+      "command": "python tools/snapshot-schemas.py --check",
+      "detail": "schema surface unchanged: 81 models, 26 enums",
+      "key": "schema-snapshot",
+      "passed": true,
+      "skipped": false,
+      "subset_of_suite": false,
+      "tests": null,
+      "title": "Schema surface unchanged",
+      "why": "The laboratory program migrates schemas and stored state, which is exactly where a field gets dropped or a vocabulary widened by accident."
+    },
+    {
+      "command": "python tools/inventory-status.py --check",
+      "detail": "status inventory unchanged: 26 vocabularies, 0 substring classifiers",
+      "key": "status-inventory",
+      "passed": true,
+      "skipped": false,
+      "subset_of_suite": false,
+      "tests": null,
+      "title": "Status vocabularies unchanged",
+      "why": "A status added without a mapping entry is a status classified by accident of spelling."
+    },
+    {
+      "command": "python tools/snapshot-baseline.py --since-baseline",
+      "detail": "knowledge invariants unchanged since rh-lab-v1-baseline-df7016d",
+      "key": "frozen-baseline",
+      "passed": true,
+      "skipped": false,
+      "subset_of_suite": false,
+      "tests": null,
+      "title": "Knowledge invariants unchanged since the frozen baseline",
+      "why": "The df7016d manifest was written before the program started and is never regenerated, so it is the one record an edit to durable memory cannot also update."
+    },
+    {
+      "command": "python tools/snapshot-baseline.py --check",
+      "detail": "authoritative state unchanged: 42 knowledge records, no-go ['K008', 'K032', 'K034', 'K038']",
+      "key": "current-manifest",
+      "passed": true,
+      "skipped": false,
+      "subset_of_suite": false,
+      "tests": null,
+      "title": "Authoritative state unchanged",
+      "why": "Names the exact record and invariant that moved, rather than reporting that something did."
+    },
+    {
+      "command": "python tools/migrate-knowledge-path.py --check",
+      "detail": "42 records, no-go ['K008', 'K032', 'K034', 'K038']",
+      "key": "migration-manifest",
+      "passed": true,
+      "skipped": false,
+      "subset_of_suite": false,
+      "tests": null,
+      "title": "Knowledge relocation is consistent",
+      "why": "The relocation is hash-bound to a manifest listing all 42 IDs, every semantic hash, every dependency edge, and the four no-go records."
+    },
+    {
+      "command": "python -m rh_research_engine.cli knowledge validate",
+      "detail": "dependency references resolve.",
+      "key": "durable-memory",
+      "passed": true,
+      "skipped": false,
+      "subset_of_suite": false,
+      "tests": null,
+      "title": "Durable memory integrity",
+      "why": "Durable memory is the authoritative research record. If its seal, status vocabulary, or dependency graph is broken, nothing downstream can be trusted."
+    },
+    {
+      "command": "python -m pytest -q tests/test_source_containment.py -k retired",
+      "detail": "1 passed, 15 deselected in 0.09s",
+      "key": "retired-path",
+      "passed": true,
+      "skipped": false,
+      "subset_of_suite": true,
+      "tests": 1,
+      "title": "Deprecated-path AST scan",
+      "why": "A hardcoded pre-relocation path matches nothing after the move, so every recorded dead-end route reads as novel prior work."
+    },
+    {
+      "command": "python -m pytest -q tests/test_source_containment.py -k \"legacy or deprecated\"",
+      "detail": "5 passed, 11 deselected in 0.91s",
+      "key": "legacy-enums",
+      "passed": true,
+      "skipped": false,
+      "subset_of_suite": true,
+      "tests": 5,
+      "title": "Legacy-enum containment scan",
+      "why": "A deprecated vocabulary that keeps spreading into new modules is a second copy of the rules, free to drift from the canonical one."
+    },
+    {
+      "command": "python -m pytest -q tests/test_source_containment.py -k \"spelling or detector\"",
+      "detail": "2 passed, 14 deselected in 0.10s",
+      "key": "spelling",
+      "passed": true,
+      "skipped": false,
+      "subset_of_suite": true,
+      "tests": 2,
+      "title": "Status-substring semantic scan",
+      "why": "Classification by spelling promoted 14 of 21 knowledge statuses to rigorous, including one whose name says an external check has not happened."
+    },
+    {
+      "command": "python -m pytest -q tests/test_public_api_attack_matrix.py",
+      "detail": "141 passed in 0.89s",
+      "key": "attack-matrix",
+      "passed": true,
+      "skipped": false,
+      "subset_of_suite": true,
+      "tests": 141,
+      "title": "Public API authority attack matrix",
+      "why": "Every public entry point, attacked the way a motivated user would attack it: construct the record that says what you want, label it convincingly, and hand it to the thing that reads labels."
+    },
+    {
+      "command": "python -m pytest -q tests/test_public_api_attack_matrix.py tests/test_contracts.py -k \"no_public_composition or real_trust_registry or trust or activation\"",
+      "detail": "102 passed, 154 deselected in 0.84s",
+      "key": "empty-trust",
+      "passed": true,
+      "skipped": false,
+      "subset_of_suite": true,
+      "tests": 102,
+      "title": "Empty-trust invariant",
+      "why": "The central Phase 1 acceptance claim. Includes the one registry combination that *does* discharge under a scoped test trust set, because it has to fail without it or the test set is not what is doing the work."
+    },
+    {
+      "command": "python -m pytest -q tests/test_determinism.py tests/test_replay_identity.py",
+      "detail": "51 passed in 2.62s",
+      "key": "determinism",
+      "passed": true,
+      "skipped": false,
+      "subset_of_suite": true,
+      "tests": 51,
+      "title": "Determinism smoke tests",
+      "why": "Same inputs, same model pack, same engine fingerprint -- same bytes. Checked across separate processes and PYTHONHASHSEED values, because set iteration order is seeded per interpreter and in-process tests all share one."
+    },
+    {
+      "command": "python -m pytest -q -k worker",
+      "detail": "15 passed, 733 deselected in 0.97s",
+      "key": "worker-boundary",
+      "passed": true,
+      "skipped": false,
+      "subset_of_suite": true,
+      "tests": 15,
+      "title": "Worker self-promotion",
+      "why": "The headline finding of the original review: a numerical run could be exported as evidence_class=proved, firing a pack rule that treats it as a theorem."
+    },
+    {
+      "command": "python -m pytest -q tests/test_fail_closed_state.py",
+      "detail": "19 passed in 41.10s",
+      "key": "missing-memory",
+      "passed": true,
+      "skipped": false,
+      "subset_of_suite": true,
+      "tests": 19,
+      "title": "Missing-memory end-to-end",
+      "why": "An absent research record is not an empty one. Every authoritative command must exit nonzero, write no artifact, and mutate no state."
+    }
+  ],
+  "head_sha": "76b5cbae7b9fd577c40b56b609931ef2ebc6bb2b",
+  "head_short": "76b5cba",
+  "inert_integrations": [
+    {
+      "effect": "No obligation can be discharged, so no RH-equivalent premise can gain frontier credit through a discharge.",
+      "name": "DRE obligation discharge",
+      "state": "implemented, trust registry empty"
+    },
+    {
+      "effect": "Every envelope reports unknown. A caller-supplied status=accepted maps to UNKNOWN rather than to RIGOROUS_NUMERICAL.",
+      "name": "Arb/FLINT rigorous verification",
+      "state": "adapter present, no backend detected"
+    }
+  ],
+  "open_limitations": [
+    "receipt_authentication records which mechanism established a receipt, and NONE never verifies. Declaring one of the other three is a claim about provenance, not the check itself -- the checker is the activation work above. Until it exists the empty trust registry, not this field, is what makes discharge authority inert.",
+    "No mathematical engine is connected. Phase 1 establishes what the records are; the workers that produce them are later workstreams, and an empty slot is preferable to a placeholder that emits artifacts which look real.",
+    "Independence groups are derived from the verifier family and version. Two genuinely distinct implementations sharing a family name would be counted as one witness, which is the safe direction but not a precise one.",
+    "The closure report records the head it ran against; committing it necessarily advances that head by one commit.",
+    "Branch protection is not configured and will not be. GitHub gates both the protection and rulesets APIs behind a paid plan for private repositories, and this repository stays private because it holds unpublished research; publishing it to obtain a merge button would trade priority on the work for a CI feature. `tools/githooks/pre-push` compensates by refusing a push to main when the fast gate fails, but it is strictly weaker: one machine, skippable with --no-verify, blind to the other platforms. Every gate still runs on every push and pull request, so nothing is unverified -- only unblocked.",
+    "No COUNTERFACTUAL closure mode was added. EXPLORATORY relaxes rigour and deliberately does not relax circularity, so there is currently no way to trace the consequences of an undischarged RH-equivalent premise at all. That is the safe direction; a quarantined non-promotable mode is Phase 2 work if the capability is ever wanted."
+  ],
+  "quick_mode": false,
+  "report": "phase1-final-gate",
+  "test_count": 748,
+  "trust_registries": {
+    "dre": {
+      "accepted_authentication_mechanisms": [
+        "deterministic_replay",
+        "sealed_store",
+        "signature"
+      ],
+      "activation_requires": [
+        "a registered engine fingerprint",
+        "a pinned model-pack hash for that fingerprint",
+        "receipt authentication by signature, sealed-store retrieval, or deterministic replay"
+      ],
+      "discharge_authority_active": false,
+      "pinned_model_pack_count": 0,
+      "registered_signing_key_count": 0,
+      "revoked_signing_key_count": 0,
+      "signature_backend_available": true,
+      "trusted_engine_count": 0
+    },
+    "verifier": {
+      "activation_requires": [
+        "an importable backend, detected rather than declared",
+        "a pinned dependency version and environment",
+        "expression hash, interval endpoints, and precision bound into the certificate"
+      ],
+      "max_confidence": "rigorous_numerical",
+      "registered_adapter_count": 0,
+      "rigorous_verification_active": false
+    }
+  },
+  "verdict": "READY TO MERGE",
+  "working_tree_clean": false
+}

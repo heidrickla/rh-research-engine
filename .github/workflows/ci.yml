@@ -1,0 +1,417 @@
+name: CI
+
+on:
+  push:
+    # Integration branches are included deliberately. Work accumulates on
+    # `feature/**` for a whole release program, and the completion gate requires
+    # green CI *on that branch* -- but a push to a non-main branch with no open
+    # PR triggers nothing, so the branch would sit unverified until someone
+    # opened one.
+    branches: [main, 'feature/**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Lint and test (${{ matrix.os }}, py${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # Windows is in the matrix because that is the authoring platform and
+        # the platform where two confirmed defects were invisible from Linux:
+        # CRLF drift in files whose bytes are hashed, and the platform-default
+        # text codec silently mojibaking a UTF-8 claims.json.
+        # LINUX ONLY, because the runner that executes this is a Linux box and
+        # there is no Windows runner to send a job to. A matrix leg with no
+        # runner does not fail -- it queues forever, which looks like CI still
+        # thinking rather than CI never having started.
+        #
+        # The OS axis was here for two confirmed defects invisible from Linux:
+        # CRLF drift in bytes that get hashed, and the platform text codec
+        # mojibaking a UTF-8 claims.json. NEITHER IS LEFT UNCHECKED, and both
+        # are now caught by something cheaper and harder to skip than a whole
+        # operating system:
+        #
+        #   * `tools/check-line-endings.py` runs on every push and is OS
+        #     agnostic -- a CRLF file committed from Windows fails it anywhere.
+        #   * Ruff's `PLW1514` refuses `open`, `Path.open`, `Path.read_text`,
+        #     `Path.write_text`, `codecs.open` and `tempfile.NamedTemporaryFile`
+        #     without an encoding. It is a PREVIEW rule -- a bare `--select
+        #     PLW1514` warns and passes -- so it is enabled in `pyproject.toml`
+        #     with `preview` + `explicit-preview-rules`, which admits that rule
+        #     and no other preview rule. An earlier note here said it "sees
+        #     `open()` but not `Path.read_text()`"; measured against ruff
+        #     0.15.21 that is false, and the silent no-op is the likeliest way
+        #     the claim was reached.
+        #   * `tools/check-text-encoding.py` covers the same file calls, plus
+        #     the one ruff has no rule for: `subprocess` in text mode, which
+        #     decodes the child with the platform default. TEN live instances
+        #     were sitting here when it was extended to look -- nine in the
+        #     tests and one in `phase1-final-gate.py`, reading `git` output to
+        #     decide Phase 1 closure.
+        #
+        # A static rule that cannot be skipped beats an OS that has to be
+        # provisioned, and it catches the defect at authoring time instead of
+        # after a merge. The Python axis stays: that one is the python-flint
+        # abi3-vs-cp313 wheel split, and both wheels install on Linux.
+        os: [ubuntu-latest]
+        # Both Python versions are here because they install two DIFFERENT
+        # BUILDS of the verification backend, not because two interpreters are
+        # interesting. `python-flint==0.9.0` publishes a `cp310-abi3` wheel --
+        # which is what 3.12 resolves to -- and a separate `cp313-cp313` one.
+        # So this axis is the difference between the stable-ABI build and the
+        # version-specific build of the library that decides whether a
+        # `certify-line` result may be filed `rigorous_numerical`.
+        #
+        # That difference has already been a defect rather than a hypothetical:
+        # a guard reached by substituting a method on `flint.types.arb` works
+        # against abi3 and raises `cannot set attribute of immutable type`
+        # against cp313, so it ran on 3.12 and was skipped on 3.13. The fix was
+        # to reach the guard through a seam in our own code, and nothing here
+        # is version-conditional now -- but the two wheels are still two
+        # compiled artifacts, and only this axis runs both.
+        #
+        # Dropping one would not shorten the gate. These four jobs start within
+        # a second of each other, so the critical path is the slowest single
+        # job and not their sum: removing a version leaves the Windows leg
+        # exactly where it was and saves about 22 minutes of runner time.
+        python-version: ['3.12', '3.13']
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      # Before anything else, because a line ending is part of a hash here.
+      # Certificate hashes, DRE payload hashes, and formula-index digests are
+      # computed over exact bytes, and DRE computes ModelHash over the raw
+      # bytes of a pack -- so CRLF and LF copies of an artifact are different
+      # models. `.gitattributes` pins eol=lf; this checks the pin held.
+      - name: Line endings
+        run: python tools/check-line-endings.py
+
+      # The other half of what the Windows matrix leg used to cover. See the
+      # tool's docstring: the platform default codec decodes UTF-8 into
+      # different characters without erroring, so a record reads back wrong and
+      # nothing says so. Static, so it holds on whatever runner is to hand.
+      - name: Text encoding is always named
+        run: python tools/check-text-encoding.py
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Import smoke test
+        run: |
+          python -c "import rh_research_engine, rh_research_engine.symbolic, rh_research_engine.mathcert, rh_research_engine.dre; print(rh_research_engine.__version__)"
+
+      # THE ONLY CHECK HERE THAT ASKS ABOUT THE REPOSITORY RATHER THAN THE DISK.
+      # A commit wired `rhre experiment fit-bias-lab` to a module that was
+      # untracked -- present in the working tree of the session that wrote it,
+      # absent from git. Seven gates, a 1320-test suite and a bare `import
+      # rh_research_engine.cli` all passed, because every one of them ran in a
+      # tree that CONTAINED the file. Main was broken from the push, and 19
+      # tests errored here on ImportError.
+      #
+      # Nothing that runs in the working tree can distinguish "this repository
+      # has the module" from "this filesystem has the module". A clone can.
+      #
+      # It asserts WHICH COPY it imported, because an editable install of the
+      # workspace is on the path: a check that silently imported the workspace
+      # copy would pass for exactly the reason it exists to catch.
+      - name: The repository imports without this filesystem
+        run: |
+          git clone --depth 1 "file://$PWD" /tmp/clone-check
+          cd /tmp/clone-check
+          PYTHONPATH=src python - <<'PY'
+          import sys
+          from pathlib import Path
+          import rh_research_engine.cli as cli
+          # RESOLVED PATHS, not string prefixes. A `startswith` comparison
+          # reported failure on a clone it had imported correctly, because one
+          # side used backslashes -- a gate fabricating a violation, which is
+          # worse than one that misses, since the next person deletes it.
+          here = Path("/tmp/clone-check").resolve()
+          got = Path(cli.__file__).resolve()
+          if here not in got.parents:
+              sys.exit(
+                  f"imported {got}, which is not under the clone at {here}. "
+                  "This check would then be reading the workspace it is meant "
+                  "to be independent of."
+              )
+          print(f"cli imports from the clone: {got}")
+          PY
+
+      # `-n auto` because the critical path through this workflow is the
+      # Windows leg of this job, and it was twice the Linux one at 24 minutes
+      # against 11. The suite is parallel-safe by construction rather than by
+      # luck: every test that writes reads repo state and writes into a tmp
+      # workspace, so there is no shared mutable path to race on. `-p
+      # no:randomly` is NOT set -- order independence is worth keeping under
+      # test, and xdist distributing by file already varies the order.
+      - name: Test
+        run: pytest -q -n auto
+
+      # Durable memory is the authoritative research record. If its seal, its
+      # status vocabulary, or its dependency graph is broken, nothing
+      # downstream can be trusted -- so fail the build, not the researcher.
+      - name: Durable memory integrity
+        run: python -m rh_research_engine.cli knowledge validate
+
+      # The laboratory program migrates schemas and stored state, which is
+      # exactly where a field gets dropped or a vocabulary widened by accident.
+      # An intended change is a one-line regeneration and a reviewable diff.
+      - name: Schema surface unchanged
+        run: python tools/snapshot-schemas.py --check
+
+      - name: Status vocabularies unchanged
+        run: python tools/inventory-status.py --check
+
+      # An assumption is what a result still rests on, and the field was free
+      # text that nothing read -- which is how "Re psi(z) <= log|z| for Re z > 0"
+      # sat in a rigorous_numerical record while being false below Re z = 1/6.
+      # Every recorded assumption must name a registry entry, every entry must
+      # name a test that exists, and every entry must say where it fails.
+      - name: Assumptions are resolvable, tested and bounded
+        run: python tools/assumption-guard.py
+
+      # Authoritative research state is what Phase 1 migrates. A failure here
+      # names the exact record and invariant, not just "something changed".
+      - name: Authoritative state unchanged
+        run: python tools/snapshot-baseline.py --check
+
+      # Separately: has anything moved since the program started? The frozen
+      # df7016d manifest is the only record of that, and it is never regenerated.
+      - name: Knowledge invariants unchanged since the baseline
+        run: python tools/snapshot-baseline.py --since-baseline
+
+      # The knowledge relocation is staged: both copies exist until the old
+      # path is retired. They must stay byte-identical and agree on every
+      # semantic invariant, or there is no defensible answer to "which one is
+      # the research record?".
+      - name: Knowledge relocation is consistent
+        run: python tools/migrate-knowledge-path.py --check
+
+  determinism:
+    name: Determinism (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    needs: check
+    strategy:
+      fail-fast: false
+      matrix:
+        # Both platforms, because the artifacts these compare are hashed over
+        # exact bytes and the two OSes disagree about line endings, path
+        # separators, and the default text codec. A replay record that is
+        # reproducible only on Linux is not a replay record.
+        # LINUX ONLY, because the runner that executes this is a Linux box and
+        # there is no Windows runner to send a job to. A matrix leg with no
+        # runner does not fail -- it queues forever, which looks like CI still
+        # thinking rather than CI never having started.
+        #
+        # The OS axis was here for two confirmed defects invisible from Linux:
+        # CRLF drift in bytes that get hashed, and the platform text codec
+        # mojibaking a UTF-8 claims.json. NEITHER IS LEFT UNCHECKED, and both
+        # are now caught by something cheaper and harder to skip than a whole
+        # operating system:
+        #
+        #   * `tools/check-line-endings.py` runs on every push and is OS
+        #     agnostic -- a CRLF file committed from Windows fails it anywhere.
+        #   * Ruff's `PLW1514` refuses `open`, `Path.open`, `Path.read_text`,
+        #     `Path.write_text`, `codecs.open` and `tempfile.NamedTemporaryFile`
+        #     without an encoding. It is a PREVIEW rule -- a bare `--select
+        #     PLW1514` warns and passes -- so it is enabled in `pyproject.toml`
+        #     with `preview` + `explicit-preview-rules`, which admits that rule
+        #     and no other preview rule. An earlier note here said it "sees
+        #     `open()` but not `Path.read_text()`"; measured against ruff
+        #     0.15.21 that is false, and the silent no-op is the likeliest way
+        #     the claim was reached.
+        #   * `tools/check-text-encoding.py` covers the same file calls, plus
+        #     the one ruff has no rule for: `subprocess` in text mode, which
+        #     decodes the child with the platform default. TEN live instances
+        #     were sitting here when it was extended to look -- nine in the
+        #     tests and one in `phase1-final-gate.py`, reading `git` output to
+        #     decide Phase 1 closure.
+        #
+        # A static rule that cannot be skipped beats an OS that has to be
+        # provisioned, and it catches the defect at authoring time instead of
+        # after a merge. The Python axis stays: that one is the python-flint
+        # abi3-vs-cp313 wheel split, and both wheels install on Linux.
+        os: [ubuntu-latest]
+    defaults:
+      run:
+        # Git Bash on Windows: sha256sum, cmp, and set -euo pipefail all exist
+        # there, so one script serves both platforms.
+        shell: bash
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      # Cross-PROCESS determinism. The in-process tests cannot catch anything
+      # seeded per interpreter -- set iteration order reaching a serialized
+      # file being the concrete case here, since Claim.tags is a set and
+      # claims.json is meant to be a machine-checkable record. Separate
+      # invocations under different hash seeds can.
+      - name: Claim registry is byte-identical across hash seeds
+        run: |
+          set -euo pipefail
+          # The loop appends, so a leftover file from an earlier step would make
+          # the uniqueness check compare this run against a previous one.
+          rm -f /tmp/claim-hashes
+          for seed in 0 1 12345; do
+            rm -rf research_state/claims.json
+            PYTHONHASHSEED=$seed python -m rh_research_engine.cli init --force >/dev/null
+            sha256sum research_state/claims.json | cut -d' ' -f1 >> /tmp/claim-hashes
+          done
+          cat /tmp/claim-hashes
+          if [ "$(sort -u /tmp/claim-hashes | wc -l)" -ne 1 ]; then
+            echo "::error::claims.json bytes depend on PYTHONHASHSEED"
+            exit 1
+          fi
+          git checkout -- research_state/claims.json
+
+      # The DRE artifact must be reproducible across processes: it is the file
+      # the engine hashes, and a replay record that cannot be regenerated
+      # byte-for-byte is not a replay record.
+      - name: DRE export is byte-identical across processes
+        run: |
+          set -euo pipefail
+          python -m rh_research_engine.cli experiment correlation-lab --X 3000 --q 4.0 >/dev/null
+          python -m rh_research_engine.cli dre export-latest --claim C005 \
+            --primary-metric screening_remainder --out /tmp/a.yaml >/dev/null
+          python -m rh_research_engine.cli dre export-latest --claim C005 \
+            --primary-metric screening_remainder --out /tmp/b.yaml >/dev/null
+          if ! cmp -s /tmp/a.yaml /tmp/b.yaml; then
+            echo "::error::DRE export differed between two processes"
+            diff /tmp/a.yaml /tmp/b.yaml || true
+            exit 1
+          fi
+          echo "identical across processes:"
+          sha256sum /tmp/a.yaml
+
+      # Reproducibility WITHIN a platform is what the two steps above prove,
+      # and it is less than the repository used to claim: `.gitattributes` says
+      # a CRLF and an LF copy of a pack are DIFFERENT MODELS, which is a
+      # statement about two platforms agreeing. Each leg used to verify itself
+      # and report green while cross-machine replay was broken.
+      #
+      # RETIRED 2026-08-25, by decision and not by lapse. Two steps stood here:
+      # one computed this platform's DRE payload hash, the other uploaded it
+      # for `cross-platform-identity` to compare against Windows. That job is
+      # gone -- this repository does not need a Windows leg (Lewis's call), and
+      # a comparison with one platform cannot be made: it had one hash and
+      # refused, which was honest and also permanently red.
+      #
+      # WHAT IT ASSERTED IS STILL ASSERTED, on one platform and more directly.
+      # The claim was that one ULP of libm and BLAS drift cannot move a stored
+      # result. `tests/test_determinism.py` now perturbs every float metric of
+      # the real correlation-lab experiment by +/-4 ULPs and requires the
+      # payload hash not to move, and separately requires a 1e-8 relative
+      # change to move it -- so a quantisation that absorbed everything fails
+      # too. Both directions were broken and watched to fail before this was
+      # deleted: 15 significant digits fails the first, 3 fails the second.
+      #
+      # That is stronger than the job it replaces. Two machines agreeing tells
+      # you those two machines agreed; this injects more drift than either
+      # would produce and shows the quantisation absorbs it.
+      - name: Worker cannot self-declare proof
+        run: |
+          set -euo pipefail
+          if python -m rh_research_engine.cli dre export-latest --claim C005 \
+               --class proved --out /tmp/pwn.yaml 2>/dev/null; then
+            echo "::error::--class was accepted; a worker can relabel numerical evidence as proof"
+            exit 1
+          fi
+          if [ -f /tmp/pwn.yaml ]; then
+            echo "::error::an artifact was written despite the export being refused"
+            exit 1
+          fi
+          echo "refused, as required"
+
+  formulas:
+    # The formulas are the product. Every other artifact in this repository
+    # describes one, and describes nothing at all if the formula was read
+    # wrong -- and a formula read wrong parses, indexes and hashes without
+    # complaint. This is the gate that says so.
+    name: Every formula reads
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[dev]"
+      - run: python tools/formula-guard.py
+
+  phase1-final-gate:
+    # The Phase 1 closure boundary, in one command.
+    #
+    # Branch protection would normally require this job, along with the Linux
+    # and Windows matrices and both determinism jobs. It is not configured here
+    # and cannot be: the protection API returns 403 for a private repository on
+    # this plan. The checks run on every push and every pull request regardless,
+    # so their results are visible -- but nothing mechanically blocks a merge
+    # that ignores them.
+    #
+    # It re-runs the whole suite plus every drift gate, which duplicates the
+    # `check` job on purpose: the point is a single invocation whose exit code
+    # answers "may Phase 1 merge?", and a verdict assembled from several jobs a
+    # reader has to correlate by hand is not that.
+    #
+    # It also writes docs/reviews/PHASE1_FINAL_CLOSURE.md. The committed copy is
+    # the human artifact; this run regenerates it and does not compare the two,
+    # because the report records the head it ran against and committing it
+    # necessarily advances that head.
+    name: Phase 1 final gate
+    runs-on: ubuntu-latest
+    needs: check
+    # ON `main` ONLY. This gate re-runs the WHOLE suite that `check` has just
+    # run, plus seven targeted subsets of it, and it is last in the workflow --
+    # 14 billed minutes a run, duplicating work already done. It is a closure
+    # report for a merged state, so a merged state is when to produce it.
+    if: github.event_name != 'pull_request'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # The gate reads the frozen df7016d baseline tag, which a shallow
+          # clone does not fetch.
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Phase 1 final gate
+        run: python tools/phase1-final-gate.py
+
+      # Uploaded rather than committed: the verdict for this specific run,
+      # citing this run's ID, kept next to the run that produced it.
+      - name: Upload the closure report
+        if: always()
+      # v3, not v4, and deliberately. `upload-artifact@v4` refuses client-side
+      # on any server that is not github.com -- GHESNotSupportedError, raised
+      # before it makes a request -- so it cannot work against Gitea at all.
+      # v3 speaks the artifact API Gitea implements.
+        uses: actions/upload-artifact@v3
+        with:
+          name: phase1-final-closure
+          path: docs/reviews/

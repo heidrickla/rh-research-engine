@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python tools/formula-guard.py --quiet",
+            "timeout": 120
+          }
+        ]
+      }
+    ]
+  }
+}

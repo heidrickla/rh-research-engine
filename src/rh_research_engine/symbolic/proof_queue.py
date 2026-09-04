@@ -1,0 +1,249 @@
+"""Which indexed formulas can be handed to Lean, and which cannot.
+
+The Lean exporter handles one fragment: polynomial identities over the
+rationals, discharged by `ring`. Everything else in this project -- contour
+shifts, asymptotic estimates, infinite sums, anything about zeta -- is outside
+it and must stay an explicit proof obligation. This module is the queue that
+sorts one from the other, so the boundary is a report rather than a judgement
+call made per formula by whoever happens to be looking.
+
+THE DISTINCTION THAT MATTERS. ``EXPORT_READY`` means *Lean source was emitted*.
+It does not mean the theorem is formally verified, because nothing here runs
+Lean. The exporter emits ``:= by ring`` and stops; whether `ring` closes the
+goal is decided by a compiler this package does not invoke. Treating emission as
+verification would reintroduce, one layer up, exactly the defect the
+`FormalizationReport` contract exists to prevent -- a file that compiles because
+an axiom stands in for the missing theorem has proved nothing, and a file nobody
+compiled has proved less than that.
+
+So :meth:`ProofQueueEntry.to_formalization_report` returns a report whose
+``remaining_obligations`` names the compilation that has not happened. That
+keeps ``fully_formalized`` false, which keeps the contract's validator refusing
+``FORMALLY_VERIFIED``.
+"""
+
+from __future__ import annotations
+
+from enum import StrEnum
+from pathlib import Path
+
+from pydantic import BaseModel, Field
+
+from ..contracts.artifacts import FormalizationReport
+from ..contracts.epistemic import Confidence
+from .citations import Citation
+from .formula_index import FormulaRecord
+from .lean import export_polynomial_identity
+
+
+class ProofQueueVerdict(StrEnum):
+    """Why a formula is, or is not, ready to hand to Lean."""
+
+    #: Lean source emitted. **Not** verified: nobody has run it.
+    EXPORT_READY = "export_ready"
+    #: Not an equation, so there is no identity to state.
+    NOT_AN_EQUATION = "not_an_equation"
+    #: Outside the supported fragment -- not a polynomial identity over Q.
+    UNSUPPORTED_FRAGMENT = "unsupported_fragment"
+    #: An equation whose two sides are not equal as free-variable algebra.
+    #:
+    #: Deliberately NOT called "false". This verdict covers two situations the
+    #: exporter cannot tell apart:
+    #:
+    #:   x**2 = x**3      a genuinely wrong or mistranscribed identity
+    #:   Theta = 1/2      a CONSTRAINT on a symbol -- here, RH itself
+    #:
+    #: Both fail `expand(lhs - rhs) == 0`, because neither holds for every
+    #: value. An earlier name, `not_symbolically_true`, read as a refutation:
+    #: a generated report listing "Theta = 1/2 -- not symbolically true" says
+    #: the engine disproved the Riemann Hypothesis. It did not, and it cannot.
+    #: The honest claim is the narrow one -- this is not an identity, so `ring`
+    #: cannot discharge it and Lean is not the right destination.
+    NOT_AN_IDENTITY = "not_an_identity"
+    #: Verified, but contains a node the printer cannot render faithfully.
+    UNRENDERABLE = "unrenderable"
+    #: Could not be parsed at all.
+    UNPARSEABLE = "unparseable"
+
+
+#: Verdicts that leave the statement an open obligation. Everything except the
+#: one that produced Lean -- and that one is still an obligation until compiled.
+REFUSED_VERDICTS = frozenset(ProofQueueVerdict) - {ProofQueueVerdict.EXPORT_READY}
+
+
+def _classify(reason: str | None) -> ProofQueueVerdict:
+    """Map the exporter's refusal onto a verdict.
+
+    Matched against the exporter's own phrases. It is a small closed set from
+    one module rather than free-form text from anywhere, and the fallback is the
+    least-committal verdict rather than a guess.
+    """
+    text = reason or ""
+    if text.startswith("parse failed"):
+        return ProofQueueVerdict.UNPARSEABLE
+    if "only polynomial identities" in text:
+        return ProofQueueVerdict.UNSUPPORTED_FRAGMENT
+    if "not symbolically verified" in text:
+        return ProofQueueVerdict.NOT_AN_IDENTITY
+    if text.startswith("cannot render"):
+        return ProofQueueVerdict.UNRENDERABLE
+    return ProofQueueVerdict.UNSUPPORTED_FRAGMENT
+
+
+class ProofQueueEntry(BaseModel):
+    """One indexed formula, and what Lean can do with it."""
+
+    record_id: str
+    expression: str
+    verdict: ProofQueueVerdict
+    theorem_name: str
+    lean: str | None = None
+    reason: str | None = None
+    citation: Citation | None = None
+
+    @property
+    def export_ready(self) -> bool:
+        return self.verdict is ProofQueueVerdict.EXPORT_READY
+
+    def lean_source(self) -> str | None:
+        """The Lean source with its provenance as a comment.
+
+        A generated theorem detached from where its statement came from is a
+        claim with no author. The comment says which record produced it and
+        which source that record cites, so the file is traceable on its own.
+        """
+        if self.lean is None:
+            return None
+        header = [
+            "-- Generated by rh-research-engine; NOT verified: this file has not been compiled.",
+            f"-- formula index record: {self.record_id}",
+        ]
+        if self.citation is not None:
+            header.append(f"-- source: {self.citation.describe()}")
+        else:
+            header.append("-- source: none recorded")
+        return "\n".join(header) + "\n\n" + self.lean
+
+    def to_formalization_report(self, *, created_by: str = "rh-proof-queue") -> FormalizationReport:
+        """Record what this actually established, which is less than it looks.
+
+        ``remaining_obligations`` names the compilation that has not happened,
+        which keeps ``fully_formalized`` false and the contract's validator
+        refusing ``FORMALLY_VERIFIED``. Emitting Lean is a step toward a proof,
+        not one.
+        """
+        outstanding = ["compile and check the emitted Lean; nothing here runs it"]
+        formalized: list[str] = []
+        if self.export_ready:
+            formalized = [self.expression]
+        else:
+            outstanding.insert(0, f"{self.verdict.value}: {self.reason or 'refused'}")
+        return FormalizationReport(
+            artifact_id=f"formalization:{self.record_id[:16]}",
+            created_by=created_by,
+            method_family="lean-export",
+            method_version="0.12.0",
+            target=self.theorem_name,
+            steps_formalized=formalized,
+            remaining_obligations=outstanding,
+            epistemic_status=Confidence.SYMBOLIC_DERIVED,
+        )
+
+
+class ProofQueue(BaseModel):
+    """The whole sort, ready and refused together.
+
+    Both halves are kept. A queue listing only what succeeded reads as though
+    the rest does not exist, when the rest is the actual research position.
+    """
+
+    entries: list[ProofQueueEntry] = Field(default_factory=list)
+
+    @property
+    def ready(self) -> list[ProofQueueEntry]:
+        return [e for e in self.entries if e.export_ready]
+
+    @property
+    def refused(self) -> list[ProofQueueEntry]:
+        return [e for e in self.entries if not e.export_ready]
+
+    def by_verdict(self) -> dict[str, int]:
+        counts: dict[str, int] = {}
+        for entry in self.entries:
+            counts[entry.verdict.value] = counts.get(entry.verdict.value, 0) + 1
+        return dict(sorted(counts.items()))
+
+    def summary(self) -> str:
+        if not self.entries:
+            return "no indexed equations to consider"
+        counts = ", ".join(f"{name}={count}" for name, count in self.by_verdict().items())
+        return (
+            f"{len(self.ready)} of {len(self.entries)} ready to export "
+            f"(emitted, not verified); {counts}"
+        )
+
+    def write(self, directory: Path) -> list[Path]:
+        """Write one `.lean` file per export-ready entry. Refusals write nothing.
+
+        Deterministic: entries are written in record-id order, with LF endings,
+        because these files are hashed like everything else here.
+        """
+        directory.mkdir(parents=True, exist_ok=True)
+        written: list[Path] = []
+        for entry in sorted(self.ready, key=lambda e: e.record_id):
+            source = entry.lean_source()
+            if source is None:  # pragma: no cover - export_ready implies lean
+                continue
+            path = directory / f"{entry.theorem_name}.lean"
+            path.write_text(source, encoding="utf-8", newline="")
+            written.append(path)
+        return written
+
+
+def build_proof_queue(records: list[FormulaRecord]) -> ProofQueue:
+    """Sort indexed formulas by what Lean can do with them.
+
+    Only equation records are candidates: an expression is not a statement, so
+    there is nothing to prove about one. That refusal is recorded rather than
+    filtered out silently, because "we have 400 formulas and 3 are provable" is
+    the useful number, and dropping the 397 would hide it.
+    """
+    entries: list[ProofQueueEntry] = []
+    for record in sorted(records, key=lambda r: r.id):
+        if record.kind != "equation" or record.lhs is None or record.rhs is None:
+            entries.append(
+                ProofQueueEntry(
+                    record_id=record.id,
+                    expression=record.expression,
+                    verdict=ProofQueueVerdict.NOT_AN_EQUATION,
+                    theorem_name=f"record_{record.id[:12]}",
+                    reason="an expression states nothing, so there is nothing to prove",
+                    citation=record.citation,
+                )
+            )
+            continue
+        theorem_name = f"identity_{record.id[:12]}"
+        export = export_polynomial_identity(record.lhs, record.rhs, theorem_name)
+        if export.supported:
+            entries.append(
+                ProofQueueEntry(
+                    record_id=record.id,
+                    expression=record.expression,
+                    verdict=ProofQueueVerdict.EXPORT_READY,
+                    theorem_name=export.theorem_name,
+                    lean=export.lean,
+                    citation=record.citation,
+                )
+            )
+        else:
+            entries.append(
+                ProofQueueEntry(
+                    record_id=record.id,
+                    expression=record.expression,
+                    verdict=_classify(export.reason),
+                    theorem_name=export.theorem_name,
+                    reason=export.reason,
+                    citation=record.citation,
+                )
+            )
+    return ProofQueue(entries=entries)

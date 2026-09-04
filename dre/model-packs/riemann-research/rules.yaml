@@ -1,0 +1,132 @@
+rules:
+  - id: RH001
+    description: Numerical observations are evidence and cannot establish a proof.
+    if:
+      - subject: research_run.evidence_class
+        operator: EQ
+        operand: numerical
+    infer:
+      - subject: research_run.proof_status
+        value: not-proved
+      - subject: research_run.promotion_allowed
+        value: false
+    priority: 100
+
+  - id: RH002
+    description: Rigorous numerical evidence remains distinct from an analytic proof.
+    if:
+      - subject: research_run.evidence_class
+        operator: EQ
+        operand: rigorous-numerical
+    infer:
+      - subject: research_run.proof_status
+        value: not-proved
+      - subject: research_run.promotion_allowed
+        value: false
+    priority: 100
+
+  - id: RH003
+    description: Symbolic derivations require an external proof/formalization step.
+    if:
+      - subject: research_run.evidence_class
+        operator: EQ
+        operand: symbolic
+    infer:
+      - subject: research_run.proof_status
+        value: needs-formal-proof
+      - subject: research_run.promotion_allowed
+        value: false
+    priority: 100
+
+  - id: RH004
+    description: >-
+      Only evidence explicitly classified as proved may be promoted as proof.
+      The worker cannot emit this class: rh-research-engine rejects
+      evidence_class=proved at construction, so reaching this rule requires a
+      formal checker or a cited theorem introduced outside the math worker.
+    if:
+      - subject: research_run.evidence_class
+        operator: EQ
+        operand: proved
+    infer:
+      - subject: research_run.proof_status
+        value: proved
+      - subject: research_run.promotion_allowed
+        value: true
+    priority: 100
+
+  - id: RH005
+    description: >-
+      Heuristic evidence previously matched no rule at all and fell through
+      RH001-RH004 with no proof_status inferred. An unhandled class is an open
+      gate, so it is closed explicitly.
+    if:
+      - subject: research_run.evidence_class
+        operator: EQ
+        operand: heuristic
+    infer:
+      - subject: research_run.proof_status
+        value: not-proved
+      - subject: research_run.promotion_allowed
+        value: false
+    priority: 100
+
+  - id: RH006
+    description: >-
+      A counterexample is a refutation, not a promotion path.
+    if:
+      - subject: research_run.evidence_class
+        operator: EQ
+        operand: counterexample
+    infer:
+      - subject: research_run.proof_status
+        value: not-proved
+      - subject: research_run.promotion_allowed
+        value: false
+    priority: 100
+
+  - id: RH007
+    description: >-
+      Evidence carrying assumptions is conditional and can never be promoted
+      unconditionally, whatever its class. A certificate annotated "assumes RH"
+      must not arrive as an unconditional predicate: that is the circular step
+      by which an RH-assuming result becomes evidence for RH.
+    if:
+      - subject: research_run.assumptions_present
+        operator: EQ
+        operand: true
+    infer:
+      - subject: research_run.proof_status
+        value: needs-formal-proof
+      - subject: research_run.promotion_allowed
+        value: false
+    priority: 400
+
+  - id: RH010
+    description: A genuine counterexample refutes the candidate branch.
+    if:
+      - subject: research_run.counterexample_found
+        operator: EQ
+        operand: true
+    infer:
+      - subject: research_run.candidate_status
+        value: refuted
+      - subject: research_run.promotion_allowed
+        value: false
+    priority: 300
+
+  - id: RH020
+    description: >-
+      Support for an RH-equivalent statement is a reformulation, not progress
+      toward a proof. This no longer depends on the evidence class: restating
+      the target is circular regardless of how the restatement was established.
+    if:
+      - subject: research_run.rh_equivalent
+        operator: EQ
+        operand: true
+    infer:
+      - subject: research_run.candidate_status
+        value: blocked-rh-equivalence
+      - subject: research_run.promotion_allowed
+        value: false
+    priority: 250

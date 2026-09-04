@@ -1,0 +1,110 @@
+[
+  {
+    "assumptions": [],
+    "citation": "",
+    "depends_on": [],
+    "evidence": [
+      "Mellin transform with zero-free Gamma multiplier."
+    ],
+    "id": "C001",
+    "implied_theta_upper": null,
+    "notes": "",
+    "statement": "For fixed q>0, a rigorous bound S_q(X)=O(X^theta) implies Re(rho)<=theta for all nontrivial zeta zeros.",
+    "status": "symbolic",
+    "tags": [
+      "gamma_filter",
+      "spectral_exponent"
+    ]
+  },
+  {
+    "assumptions": [],
+    "citation": "",
+    "depends_on": [],
+    "evidence": [
+      "Simple-pole residues of zeta'/zeta and explicit trivial-zero correction."
+    ],
+    "id": "C002",
+    "implied_theta_upper": null,
+    "notes": "",
+    "statement": "RH is equivalent to corrected safe-binomial coefficients satisfying corrected_d_k=O(k^-3/4).",
+    "status": "equivalent_rh",
+    "tags": [
+      "norlund_rice",
+      "rh_equivalence",
+      "rh_equivalent_assumption",
+      "safe_values"
+    ]
+  },
+  {
+    "assumptions": [
+      "rigorous uniform screening-remainder bound",
+      "fixed q",
+      "bounded deterministic model contribution"
+    ],
+    "citation": "",
+    "depends_on": [],
+    "evidence": [
+      "Exact zero response of the localized Gamma shell has energy exponent 2(Re(rho)-1/2)."
+    ],
+    "id": "C005",
+    "implied_theta_upper": null,
+    "notes": "",
+    "statement": "For one fixed q>0, if the localized Hardy--Littlewood screening model is O_q(1) and the actual screening remainder is O(X^theta), then Theta<=1/2+theta/2.",
+    "status": "symbolic",
+    "tags": [
+      "correlation_lab",
+      "screening_remainder",
+      "spectral_exponent"
+    ]
+  },
+  {
+    "assumptions": [],
+    "citation": "",
+    "depends_on": [],
+    "evidence": [
+      "Weighted average of the singular series has universal -1/2 log H secondary term."
+    ],
+    "id": "C006",
+    "implied_theta_upper": null,
+    "notes": "",
+    "statement": "In the Hardy--Littlewood singular-series model, the universal secondary shift bias cancels the leading A_q log X diagonal shot noise for the localized Gamma shell.",
+    "status": "inferred",
+    "tags": [
+      "correlation_lab",
+      "hardy_littlewood_model",
+      "screening"
+    ]
+  },
+  {
+    "assumptions": [],
+    "citation": "",
+    "depends_on": [],
+    "evidence": [
+      "Off-line zeros appear as all-pass/Blaschke factors with unit boundary modulus."
+    ],
+    "id": "C003",
+    "implied_theta_upper": null,
+    "notes": "",
+    "statement": "Boundary unitarity of the zeta scattering ratio alone proves RH.",
+    "status": "false",
+    "tags": [
+      "boundary_unitarity_only"
+    ]
+  },
+  {
+    "assumptions": [],
+    "citation": "",
+    "depends_on": [],
+    "evidence": [
+      "Higher-level numerical/formal recursion fails for the actual theta kernel."
+    ],
+    "id": "C004",
+    "implied_theta_upper": null,
+    "notes": "",
+    "statement": "All iterated theta log-concavity levels remain positive.",
+    "status": "false",
+    "tags": [
+      "all_iterated_log_concavity"
+    ]
+  }
+]

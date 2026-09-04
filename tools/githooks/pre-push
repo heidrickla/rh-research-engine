@@ -1,0 +1,79 @@
+#!/bin/sh
+# rh-research-engine pre-push guard for `main`.
+#
+# INSTALL, once per clone (this also installs the pre-commit hook):
+#
+#     git config core.hooksPath tools/githooks
+#
+# WHY THIS EXISTS, AND WHAT IT IS NOT.
+#
+# Section 11 of the Phase 1 closure brief asks for branch protection requiring
+# the test matrix, both determinism jobs, and the Phase 1 final gate. GitHub
+# gates that behind a paid plan for private repositories, and this repository
+# stays private: it holds unpublished RH research, and publishing it to unlock
+# a CI feature would trade priority on the work for a merge button.
+#
+# So server-side enforcement is unavailable, and this is the compensating
+# control. It is strictly weaker, and the difference matters:
+#
+#   * it runs on the author's machine, so it protects this clone and no other;
+#   * `git push --no-verify` skips it entirely;
+#   * it cannot see what CI sees on other platforms;
+#   * it never fires for a pull request merged through the GitHub UI, because
+#     that merge happens on the server and no local hook is involved.
+#
+# The last one bounds what this actually covers: pushing straight to `main`,
+# which is the path with no review surface at all. A pull request at least puts
+# the check results on the page next to the merge button.
+#
+# What it does cover is the realistic failure mode for a single maintainer,
+# which is not a determined bypass but an absent-minded push. CI still runs
+# everything on every push and pull request; what is missing is only the
+# blocking, and this restores the part of it that a person actually trips over.
+#
+# SPEED IS THE DESIGN CONSTRAINT. `--fast` drops the full suite and the
+# missing-memory end-to-end run, leaving fifteen gates in roughly fifteen
+# seconds. A guard slow enough to be annoying is a guard that gets bypassed out
+# of habit, and a habitually bypassed guard covers nothing. The two dropped
+# steps still run in CI, and `--no-report` keeps the hook from leaving the
+# working tree dirty after a successful push.
+
+PROTECTED_REF="refs/heads/main"
+
+PY="$(command -v python 2>/dev/null || command -v python3 2>/dev/null)"
+
+guarded=0
+# git feeds us one line per ref: <local ref> <local sha> <remote ref> <remote sha>
+while read -r _local_ref local_sha remote_ref _remote_sha; do
+    [ "$remote_ref" = "$PROTECTED_REF" ] || continue
+    # All-zero local sha means the branch is being deleted; there is nothing to
+    # gate, and running the suite against it would be checking the wrong tree.
+    case "$local_sha" in
+        *[!0]*) guarded=1 ;;
+    esac
+done
+
+[ "$guarded" -eq 1 ] || exit 0
+
+if [ -z "$PY" ]; then
+    # Loudly, because this is the only enforcement there is. A skip nobody
+    # notices is indistinguishable from a pass.
+    echo "pre-push: no python on PATH -- Phase 1 gate SKIPPED, push to main allowed" >&2
+    echo "pre-push: nothing has verified this push. Check CI before relying on it." >&2
+    exit 0
+fi
+
+echo "pre-push: running the formula guard and the Phase 1 gate against main" >&2
+echo "          (~15s; --no-verify skips both)" >&2
+# Formula integrity, before the closure gate: a formula read wrong makes
+# every gate below it a statement about the wrong formula.
+"$PY" tools/formula-guard.py --quiet >&2 || exit 1
+
+if ! "$PY" tools/phase1-final-gate.py --fast --no-report >&2; then
+    echo >&2
+    echo "pre-push: REFUSED. A gate above failed, and main is the branch every" >&2
+    echo "          other check is measured against. Fix it, or push with" >&2
+    echo "          --no-verify if you have a reason and know what it is." >&2
+    exit 1
+fi
+exit 0

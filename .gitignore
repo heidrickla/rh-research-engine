@@ -1,0 +1,19 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+
+# The open-findings ledger accumulates per run and per machine: every
+# `rhre patterns sweep` rewrites it, and at n = 5000 it is half a megabyte of
+# universes and witness lists. The durable research decisions are in
+# `pattern_noise.json`, which IS tracked -- a noise rule is a judgement somebody
+# made once and it must not be lost. The ledger is regenerable by re-running the
+# sweep.
+research_state/pattern_open.json

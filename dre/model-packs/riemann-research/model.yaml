@@ -1,0 +1,8 @@
+model:
+  id: riemann-research
+  version: 0.1.0
+  requires_engine: 0.22.0
+  description: >-
+    Epistemic supervisor for Riemann-Hypothesis research evidence produced by
+    external deterministic math workers. Numerical evidence may support or
+    contradict a claim but is never promoted to a proof by this pack.

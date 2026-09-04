@@ -1,0 +1,303 @@
+{
+  "manifest_version": "1",
+  "migration_id": "knowledge-path-authoritative-v1",
+  "description": "Staged relocation of durable memory into the authoritative-state layout. Bytes unchanged; legacy path retained for rollback and retired in a later commit.",
+  "source_path": "research_state/math_knowledge.json",
+  "target_path": "research_state/authoritative/knowledge/math_knowledge.json",
+  "source_schema": "math_knowledge/1",
+  "target_schema": "math_knowledge/1",
+  "source_hash": "f63359cf9250cd4f6d4b6036461a9a12f56cc15a9dd02048fcee1a54d66085d8",
+  "target_hash": "f63359cf9250cd4f6d4b6036461a9a12f56cc15a9dd02048fcee1a54d66085d8",
+  "record_count": 42,
+  "mapping_version": 1,
+  "ambiguous_records": [],
+  "invariants": {
+    "record_count": 42,
+    "ids": [
+      "K001",
+      "K002",
+      "K003",
+      "K004",
+      "K005",
+      "K006",
+      "K007",
+      "K008",
+      "K009",
+      "K010",
+      "K011",
+      "K012",
+      "K013",
+      "K014",
+      "K015",
+      "K016",
+      "K017",
+      "K018",
+      "K019",
+      "K020",
+      "K021",
+      "K022",
+      "K023",
+      "K024",
+      "K025",
+      "K026",
+      "K027",
+      "K028",
+      "K029",
+      "K030",
+      "K031",
+      "K032",
+      "K033",
+      "K034",
+      "K035",
+      "K036",
+      "K037",
+      "K038",
+      "K039",
+      "K040",
+      "K041",
+      "K042"
+    ],
+    "semantic_hashes": {
+      "K001": "226c242ddc5ad45ddaed67b718ceb291f8ee4f0127dcda028ea5833e39bf3159",
+      "K002": "727a8ff72cb8c1dea90421fb648a2ecac035c0323b1aa8d7827e827cbcb1f84d",
+      "K003": "74a58662faf1c8262e42bf44cad78b86c11f5eed5e9b9946829d80a5ec68ebe2",
+      "K004": "781f25d2920255885d7a3575681d5efe2ed43d830fd36203b1a04214e43d52eb",
+      "K005": "dbe65bcc7001910baa60a2ef330f83b856f4f79b9470e3afe08869ffaf1e75d4",
+      "K006": "a4a45038796b962795b0658dd62ace1afa8e27a75b28590d1b43429cbb6f27ce",
+      "K007": "edd6daec0efec9bee553ff36fd073072b3b6b2e7dc95611c4c5c31f3d7e2a7e6",
+      "K008": "af8806ff7a2c8d7c4ea5522d76416b119692ac416aad0afcaacdf25ccb3dc3fc",
+      "K009": "fa661dcd86808efb2e262cf744345cb4813d69869b53c22ec51483473f41b9dc",
+      "K010": "98d5268a36d85cca7d65907f0d2d5af618b9a1b85e954cf916ee15aa14826055",
+      "K011": "efed4a7d0a3060ce786d8caf4b7de242dd3a73a1f0192d7711240cfe950ff3bc",
+      "K012": "3f05cd2eb913c5c09f8947670c1e16a517071f44cc8e7a77f4cd4325ef414c97",
+      "K013": "9e38e962e59bb6e5c0af2312f20243068048f2b09ed7e9496906ea0ad64d38a4",
+      "K014": "a6c9d54494d66255c4e04575f39fb472fdda82bd7ec8ac45ab7da60e73dcddbb",
+      "K015": "ba83b0f9f5df9e45ebc93c7065317ebaddbfd16db70ffd91ddcde549af48bd9c",
+      "K016": "f554bafa0f9d3bd4a2a5be91afba360956f32718a3ce108764b24eabbc803a05",
+      "K017": "3288ab72e8d30e43f314b0c1fe501ea44de2b9990ac9215f17c6ede470274fb1",
+      "K018": "8ba6da687b4755c52602c6f14fe536d0862abe3e2b61fc72bf04b759a277b926",
+      "K019": "8c7dddefac246ea110de052089a629092868385979cbf950b7dcf532339aeffc",
+      "K020": "4f5a68795e22db9fa4d0dbe7a630f894b39132c7685ab9dc174289b7c40738fb",
+      "K021": "815ca320fcac956de540f3a4ad44d8df7bb0070642a8511de91a330e64e600b2",
+      "K022": "5dbe6884029f4d9e186b4436d8180c10f46dc91c7d183ae32840b888a3e23c51",
+      "K023": "7b371c5118556a4121ebabe13914bc1ce0841188c79b75cb1f911efac907aace",
+      "K024": "0f4954dbc25c86635933b5a7bdf5cfec50b7c9e1bab06bbf757c73c74063ae46",
+      "K025": "10f8d84b111994b8d5f27154c5b1737c3fe28b710f475f45197936ac9b563ac2",
+      "K026": "6521ff3e7f91a9bcd3f8fe9de7804e2581a7dd88ce1760669400e4fd8a342d9f",
+      "K027": "624e1af6991303b0a0afe2827af686fd16fef242043c61b4eb05a215268d9a9b",
+      "K028": "3ff96fed730e4e56edba4b464ddd41a72c5e2609aa5dd6cc28856ac255a43863",
+      "K029": "83ddb99bd13752856c20f6b84cbb2f91557645120f6ef1b78a5499efc5eb4d03",
+      "K030": "09691d2b1ee63bef450a85de7586d4761415270f701317569892ac70b4fa27d5",
+      "K031": "07384b28d080cf7f63d18c224b6f8e88c7309f9c51f5098380268ba488b39d6e",
+      "K032": "7ca3e084de4cc154703f2bc76f3182b5ebc21c3e50ac5762e2aaf1b794716dae",
+      "K033": "88a3670d4bf54b7b2f8c538c0d732b4edd729dbd2992ee9366427872d9a78c77",
+      "K034": "01fdfc857b9fe82c5e88bfd93232d5b9e427ffb352ba51b7200a7306982a56ca",
+      "K035": "1b9e5a16b473804b9c2eb3ed6a46f56a46a72f2b6a048772be0fae3306b98010",
+      "K036": "63ee3e1ae738d57945ce7908eb2f4a44d73b49aed52d96c7d2e7386da4970b9b",
+      "K037": "640726f85eafc2057e400174b86119e62202c6d5e65927f75b17bc5d97c952ba",
+      "K038": "fe8a3fdde0ddb7fa7b5de275492991af56a6dc45a48d7b77b479641bc7ebe216",
+      "K039": "a66f7df413d0dcf6c5a3a5403598b08ddb85a888663910c48f7a9363bac3f635",
+      "K040": "bb3306960ba515c0fd1446812a52b5e381f97cb9ea5579c69f07bacbcebd4d6d",
+      "K041": "b9058dbb634172aa073d002035cb5dbb6cb4e12f5c9640cbf5372b9333742f88",
+      "K042": "4583b50c089caf228b033a634ba4656d646235a7a30b4842826283d7f477d445"
+    },
+    "dependency_edges": [
+      [
+        "K002",
+        "K001"
+      ],
+      [
+        "K003",
+        "K002"
+      ],
+      [
+        "K004",
+        "K003"
+      ],
+      [
+        "K005",
+        "K001"
+      ],
+      [
+        "K006",
+        "K005"
+      ],
+      [
+        "K007",
+        "K005"
+      ],
+      [
+        "K007",
+        "K006"
+      ],
+      [
+        "K008",
+        "K005"
+      ],
+      [
+        "K009",
+        "K001"
+      ],
+      [
+        "K010",
+        "K009"
+      ],
+      [
+        "K011",
+        "K010"
+      ],
+      [
+        "K012",
+        "K001"
+      ],
+      [
+        "K013",
+        "K001"
+      ],
+      [
+        "K013",
+        "K012"
+      ],
+      [
+        "K014",
+        "K001"
+      ],
+      [
+        "K015",
+        "K001"
+      ],
+      [
+        "K016",
+        "K015"
+      ],
+      [
+        "K017",
+        "K016"
+      ],
+      [
+        "K018",
+        "K017"
+      ],
+      [
+        "K019",
+        "K018"
+      ],
+      [
+        "K019",
+        "K025"
+      ],
+      [
+        "K020",
+        "K015"
+      ],
+      [
+        "K021",
+        "K020"
+      ],
+      [
+        "K022",
+        "K001"
+      ],
+      [
+        "K023",
+        "K022"
+      ],
+      [
+        "K024",
+        "K023"
+      ],
+      [
+        "K025",
+        "K023"
+      ],
+      [
+        "K026",
+        "K015"
+      ],
+      [
+        "K026",
+        "K025"
+      ],
+      [
+        "K027",
+        "K001"
+      ],
+      [
+        "K028",
+        "K027"
+      ],
+      [
+        "K029",
+        "K027"
+      ],
+      [
+        "K029",
+        "K028"
+      ],
+      [
+        "K030",
+        "K029"
+      ],
+      [
+        "K031",
+        "K001"
+      ],
+      [
+        "K032",
+        "K031"
+      ],
+      [
+        "K033",
+        "K031"
+      ],
+      [
+        "K034",
+        "K033"
+      ],
+      [
+        "K035",
+        "K001"
+      ],
+      [
+        "K036",
+        "K035"
+      ],
+      [
+        "K037",
+        "K001"
+      ],
+      [
+        "K038",
+        "K037"
+      ],
+      [
+        "K039",
+        "K015"
+      ],
+      [
+        "K040",
+        "K015"
+      ],
+      [
+        "K041",
+        "K015"
+      ]
+    ],
+    "no_go_ids": [
+      "K008",
+      "K032",
+      "K034",
+      "K038"
+    ],
+    "research_target_ids": [
+      "K019"
+    ],
+    "dependency_errors": []
+  },
+  "notes": [
+    "byte-for-byte copy; SHA-256 identical on both sides",
+    "legacy path retained: rollback is a deletion, not a restore",
+    "canonical JSON normalisation is a separate later migration",
+    "the historical trailing '}]}' artifact was already removed in a6c47c1, so there is none left to preserve"
+  ]
+}

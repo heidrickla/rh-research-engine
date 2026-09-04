@@ -1,0 +1,777 @@
+{
+  "axis_fields": {
+    "rh_research_engine.contracts.artifacts.Artifact": {
+      "axes": {
+        "discharged_obligations": "frontier",
+        "epistemic_status": "epistemic",
+        "mathematical_role": "role",
+        "rh_equivalent": "frontier"
+      },
+      "model": "Artifact",
+      "module": "rh_research_engine.contracts.artifacts"
+    },
+    "rh_research_engine.contracts.artifacts.CounterexampleArtifact": {
+      "axes": {
+        "discharged_obligations": "frontier",
+        "epistemic_status": "epistemic",
+        "mathematical_role": "role",
+        "rh_equivalent": "frontier"
+      },
+      "model": "CounterexampleArtifact",
+      "module": "rh_research_engine.contracts.artifacts"
+    },
+    "rh_research_engine.contracts.artifacts.FormalizationReport": {
+      "axes": {
+        "discharged_obligations": "frontier",
+        "epistemic_status": "epistemic",
+        "mathematical_role": "role",
+        "rh_equivalent": "frontier"
+      },
+      "model": "FormalizationReport",
+      "module": "rh_research_engine.contracts.artifacts"
+    },
+    "rh_research_engine.contracts.artifacts.InequalityCertificate": {
+      "axes": {
+        "discharged_obligations": "frontier",
+        "epistemic_status": "epistemic",
+        "mathematical_role": "role",
+        "rh_equivalent": "frontier",
+        "verification_status": "epistemic"
+      },
+      "model": "InequalityCertificate",
+      "module": "rh_research_engine.contracts.artifacts"
+    },
+    "rh_research_engine.contracts.artifacts.KernelAnalysis": {
+      "axes": {
+        "discharged_obligations": "frontier",
+        "epistemic_status": "epistemic",
+        "mathematical_role": "role",
+        "rh_equivalent": "frontier"
+      },
+      "model": "KernelAnalysis",
+      "module": "rh_research_engine.contracts.artifacts"
+    },
+    "rh_research_engine.contracts.artifacts.LiteratureMatch": {
+      "axes": {
+        "discharged_obligations": "frontier",
+        "epistemic_status": "epistemic",
+        "mathematical_role": "role",
+        "rh_equivalent": "frontier"
+      },
+      "model": "LiteratureMatch",
+      "module": "rh_research_engine.contracts.artifacts"
+    },
+    "rh_research_engine.contracts.artifacts.MathematicalObject": {
+      "axes": {
+        "discharged_obligations": "frontier",
+        "epistemic_status": "epistemic",
+        "mathematical_role": "role",
+        "rh_equivalent": "frontier"
+      },
+      "model": "MathematicalObject",
+      "module": "rh_research_engine.contracts.artifacts"
+    },
+    "rh_research_engine.contracts.artifacts.ModelFamilySpec": {
+      "axes": {
+        "discharged_obligations": "frontier",
+        "epistemic_status": "epistemic",
+        "mathematical_role": "role",
+        "rh_equivalent": "frontier"
+      },
+      "model": "ModelFamilySpec",
+      "module": "rh_research_engine.contracts.artifacts"
+    },
+    "rh_research_engine.contracts.artifacts.ObligationDischargeDecision": {
+      "axes": {
+        "discharged_obligations": "frontier",
+        "epistemic_status": "epistemic",
+        "mathematical_role": "role",
+        "rh_equivalent": "frontier"
+      },
+      "model": "ObligationDischargeDecision",
+      "module": "rh_research_engine.contracts.artifacts"
+    },
+    "rh_research_engine.contracts.artifacts.OperatorExperiment": {
+      "axes": {
+        "discharged_obligations": "frontier",
+        "epistemic_status": "epistemic",
+        "mathematical_role": "role",
+        "rh_equivalent": "frontier"
+      },
+      "model": "OperatorExperiment",
+      "module": "rh_research_engine.contracts.artifacts"
+    },
+    "rh_research_engine.contracts.artifacts.ProofObligation": {
+      "axes": {
+        "discharged_obligations": "frontier",
+        "epistemic_status": "epistemic",
+        "mathematical_role": "role",
+        "rh_equivalent": "frontier",
+        "status": "epistemic"
+      },
+      "model": "ProofObligation",
+      "module": "rh_research_engine.contracts.artifacts"
+    },
+    "rh_research_engine.contracts.artifacts.PropertyAssertion": {
+      "axes": {
+        "discharged_obligations": "frontier",
+        "epistemic_status": "epistemic",
+        "mathematical_role": "role",
+        "rh_equivalent": "frontier"
+      },
+      "model": "PropertyAssertion",
+      "module": "rh_research_engine.contracts.artifacts"
+    },
+    "rh_research_engine.contracts.artifacts.ResearchRunManifest": {
+      "axes": {
+        "discharged_obligations": "frontier",
+        "epistemic_status": "epistemic",
+        "mathematical_role": "role",
+        "rh_equivalent": "frontier"
+      },
+      "model": "ResearchRunManifest",
+      "module": "rh_research_engine.contracts.artifacts"
+    },
+    "rh_research_engine.contracts.artifacts.SupervisorDecision": {
+      "axes": {
+        "discharged_obligations": "frontier",
+        "epistemic_status": "epistemic",
+        "mathematical_role": "role",
+        "rh_equivalent": "frontier"
+      },
+      "model": "SupervisorDecision",
+      "module": "rh_research_engine.contracts.artifacts"
+    },
+    "rh_research_engine.contracts.artifacts.SyntheticModel": {
+      "axes": {
+        "discharged_obligations": "frontier",
+        "epistemic_status": "epistemic",
+        "mathematical_role": "role",
+        "rh_equivalent": "frontier"
+      },
+      "model": "SyntheticModel",
+      "module": "rh_research_engine.contracts.artifacts"
+    },
+    "rh_research_engine.contracts.artifacts.TransformDerivation": {
+      "axes": {
+        "discharged_obligations": "frontier",
+        "epistemic_status": "epistemic",
+        "mathematical_role": "role",
+        "rh_equivalent": "frontier"
+      },
+      "model": "TransformDerivation",
+      "module": "rh_research_engine.contracts.artifacts"
+    },
+    "rh_research_engine.contracts.frontier.FrontierAssessment": {
+      "axes": {
+        "advances_frontier": "frontier",
+        "frontier_relevant": "frontier",
+        "property_extractable": "frontier"
+      },
+      "model": "FrontierAssessment",
+      "module": "rh_research_engine.contracts.frontier"
+    },
+    "rh_research_engine.core.knowledge.KnowledgeItem": {
+      "axes": {
+        "status": "epistemic"
+      },
+      "model": "KnowledgeItem",
+      "module": "rh_research_engine.core.knowledge"
+    },
+    "rh_research_engine.core.models.Claim": {
+      "axes": {
+        "status": "epistemic"
+      },
+      "model": "Claim",
+      "module": "rh_research_engine.core.models"
+    },
+    "rh_research_engine.core.models.ExperimentResult": {
+      "axes": {
+        "evidence_class": "epistemic"
+      },
+      "model": "ExperimentResult",
+      "module": "rh_research_engine.core.models"
+    },
+    "rh_research_engine.dre.contracts.DreEvidenceEnvelope": {
+      "axes": {
+        "claim_effect": "classification",
+        "evidence_class": "epistemic",
+        "rh_equivalent": "frontier"
+      },
+      "model": "DreEvidenceEnvelope",
+      "module": "rh_research_engine.dre.contracts"
+    },
+    "rh_research_engine.mathcert.models.BigRational": {
+      "axes": {
+        "kind": "classification"
+      },
+      "model": "BigRational",
+      "module": "rh_research_engine.mathcert.models"
+    },
+    "rh_research_engine.mathcert.models.ComplexInterval": {
+      "axes": {
+        "kind": "classification"
+      },
+      "model": "ComplexInterval",
+      "module": "rh_research_engine.mathcert.models"
+    },
+    "rh_research_engine.mathcert.models.RealInterval": {
+      "axes": {
+        "kind": "classification"
+      },
+      "model": "RealInterval",
+      "module": "rh_research_engine.mathcert.models"
+    },
+    "rh_research_engine.mathcert.models.ScientificInteger": {
+      "axes": {
+        "kind": "classification"
+      },
+      "model": "ScientificInteger",
+      "module": "rh_research_engine.mathcert.models"
+    },
+    "rh_research_engine.mathcert.models.SymbolicExpression": {
+      "axes": {
+        "kind": "classification"
+      },
+      "model": "SymbolicExpression",
+      "module": "rh_research_engine.mathcert.models"
+    },
+    "rh_research_engine.mathcert.verifiers.VerifierEnvelope": {
+      "axes": {
+        "status": "epistemic"
+      },
+      "model": "VerifierEnvelope",
+      "module": "rh_research_engine.mathcert.verifiers"
+    },
+    "rh_research_engine.patterns.ledger.OpenFinding": {
+      "axes": {
+        "kind": "classification"
+      },
+      "model": "OpenFinding",
+      "module": "rh_research_engine.patterns.ledger"
+    },
+    "rh_research_engine.patterns.models.PatternFinding": {
+      "axes": {
+        "kind": "classification",
+        "role": "role"
+      },
+      "model": "PatternFinding",
+      "module": "rh_research_engine.patterns.models"
+    },
+    "rh_research_engine.patterns.noise.NoiseRule": {
+      "axes": {
+        "kind": "classification"
+      },
+      "model": "NoiseRule",
+      "module": "rh_research_engine.patterns.noise"
+    },
+    "rh_research_engine.properties.models.DiscriminatorResult": {
+      "axes": {
+        "status": "epistemic"
+      },
+      "model": "DiscriminatorResult",
+      "module": "rh_research_engine.properties.models"
+    },
+    "rh_research_engine.properties.models.MathObject": {
+      "axes": {
+        "kind": "classification"
+      },
+      "model": "MathObject",
+      "module": "rh_research_engine.properties.models"
+    },
+    "rh_research_engine.properties.models.PropertyEdge": {
+      "axes": {
+        "status": "epistemic"
+      },
+      "model": "PropertyEdge",
+      "module": "rh_research_engine.properties.models"
+    },
+    "rh_research_engine.properties.models.PropertyRecord": {
+      "axes": {
+        "discharged_obligations": "frontier",
+        "kind": "classification",
+        "rh_equivalent": "frontier",
+        "role": "role",
+        "status": "epistemic"
+      },
+      "model": "PropertyRecord",
+      "module": "rh_research_engine.properties.models"
+    },
+    "rh_research_engine.supervisor.models.Hypothesis": {
+      "axes": {
+        "discharged_obligations": "frontier",
+        "epistemic_status": "epistemic",
+        "lifecycle": "lifecycle",
+        "mathematical_role": "role",
+        "rh_equivalent": "frontier"
+      },
+      "model": "Hypothesis",
+      "module": "rh_research_engine.supervisor.models"
+    },
+    "rh_research_engine.symbolic.formula_index.FormulaRecord": {
+      "axes": {
+        "kind": "classification"
+      },
+      "model": "FormulaRecord",
+      "module": "rh_research_engine.symbolic.formula_index"
+    },
+    "rh_research_engine.symbolic.models.CountertermCandidate": {
+      "axes": {
+        "status": "epistemic"
+      },
+      "model": "CountertermCandidate",
+      "module": "rh_research_engine.symbolic.models"
+    },
+    "rh_research_engine.symbolic.models.DecompositionCandidate": {
+      "axes": {
+        "kind": "classification"
+      },
+      "model": "DecompositionCandidate",
+      "module": "rh_research_engine.symbolic.models"
+    },
+    "rh_research_engine.symbolic.models.ExtractedEquation": {
+      "axes": {
+        "kind": "classification"
+      },
+      "model": "ExtractedEquation",
+      "module": "rh_research_engine.symbolic.models"
+    },
+    "rh_research_engine.symbolic.models.ProofStep": {
+      "axes": {
+        "status": "epistemic"
+      },
+      "model": "ProofStep",
+      "module": "rh_research_engine.symbolic.models"
+    },
+    "rh_research_engine.symbolic.route_matcher.RouteMatch": {
+      "axes": {
+        "status": "epistemic"
+      },
+      "model": "RouteMatch",
+      "module": "rh_research_engine.symbolic.route_matcher"
+    }
+  },
+  "inventory_version": "1",
+  "package_version": "0.12.0",
+  "substring_classifiers": [],
+  "summary": {
+    "models_carrying_axes": 41,
+    "substring_classifiers": 0,
+    "total_members": 202,
+    "vocabulary_count": 30
+  },
+  "vocabularies": {
+    "rh_research_engine.contracts.artifacts.ArtifactType": {
+      "member_count": 18,
+      "members": [
+        "hypothesis",
+        "proof_step",
+        "proof_obligation",
+        "property_assertion",
+        "mathematical_object",
+        "model_family_spec",
+        "synthetic_model",
+        "counterexample",
+        "transform_derivation",
+        "kernel_analysis",
+        "operator_experiment",
+        "inequality_certificate",
+        "math_certificate",
+        "literature_match",
+        "formalization_report",
+        "obligation_discharge_decision",
+        "supervisor_decision",
+        "research_run_manifest"
+      ],
+      "module": "rh_research_engine.contracts.artifacts",
+      "name": "ArtifactType"
+    },
+    "rh_research_engine.contracts.artifacts.CertificateVerification": {
+      "member_count": 3,
+      "members": [
+        "accepted",
+        "rejected",
+        "unknown"
+      ],
+      "module": "rh_research_engine.contracts.artifacts",
+      "name": "CertificateVerification"
+    },
+    "rh_research_engine.contracts.artifacts.CounterexampleVerdict": {
+      "member_count": 5,
+      "members": [
+        "false_positive",
+        "false_negative",
+        "separates_synthetic_classes",
+        "inapplicable",
+        "inconclusive"
+      ],
+      "module": "rh_research_engine.contracts.artifacts",
+      "name": "CounterexampleVerdict"
+    },
+    "rh_research_engine.contracts.artifacts.DreDecisionStatus": {
+      "member_count": 3,
+      "members": [
+        "accepted",
+        "rejected",
+        "pending"
+      ],
+      "module": "rh_research_engine.contracts.artifacts",
+      "name": "DreDecisionStatus"
+    },
+    "rh_research_engine.contracts.artifacts.LiteratureVerdict": {
+      "member_count": 7,
+      "members": [
+        "known_identical",
+        "known_equivalent",
+        "known_stronger",
+        "known_weaker",
+        "likely_related",
+        "potentially_new",
+        "insufficient_evidence"
+      ],
+      "module": "rh_research_engine.contracts.artifacts",
+      "name": "LiteratureVerdict"
+    },
+    "rh_research_engine.contracts.artifacts.ObligationStatus": {
+      "member_count": 3,
+      "members": [
+        "open",
+        "discharged",
+        "eliminated"
+      ],
+      "module": "rh_research_engine.contracts.artifacts",
+      "name": "ObligationStatus"
+    },
+    "rh_research_engine.contracts.epistemic.Confidence": {
+      "member_count": 14,
+      "members": [
+        "formally_verified",
+        "proved",
+        "known",
+        "certified",
+        "rigorous_derived",
+        "rigorous_numerical",
+        "symbolic_derived",
+        "numerical",
+        "heuristic",
+        "synthetic",
+        "conjectural",
+        "refuted",
+        "authoritative_policy",
+        "unknown"
+      ],
+      "module": "rh_research_engine.contracts.epistemic",
+      "name": "Confidence"
+    },
+    "rh_research_engine.contracts.lifecycle.HypothesisLifecycle": {
+      "member_count": 6,
+      "members": [
+        "proposed",
+        "triaged",
+        "active",
+        "blocked",
+        "resolved",
+        "archived"
+      ],
+      "module": "rh_research_engine.contracts.lifecycle",
+      "name": "HypothesisLifecycle"
+    },
+    "rh_research_engine.contracts.receipts.ReceiptAuthentication": {
+      "member_count": 4,
+      "members": [
+        "none",
+        "signature",
+        "sealed_store",
+        "deterministic_replay"
+      ],
+      "module": "rh_research_engine.contracts.receipts",
+      "name": "ReceiptAuthentication"
+    },
+    "rh_research_engine.contracts.roles.Role": {
+      "member_count": 11,
+      "members": [
+        "mathematical_definition",
+        "mathematical_identity",
+        "mathematical_bound",
+        "mathematical_equivalence",
+        "mathematical_implication",
+        "mathematical_criterion",
+        "mathematical_construction",
+        "mathematical_claim",
+        "mathematical_no_go",
+        "governance",
+        "procedural"
+      ],
+      "module": "rh_research_engine.contracts.roles",
+      "name": "Role"
+    },
+    "rh_research_engine.core.knowledge.KnowledgeStatus": {
+      "member_count": 21,
+      "members": [
+        "exact",
+        "exact_algebra",
+        "exact_algebra_in_model",
+        "exact_calculus",
+        "exact_construction",
+        "exact_distributional",
+        "derived_symbolic",
+        "derived_symbolic_needs_external_check",
+        "derived_from_abscissa",
+        "derived_from_standard_exponent_relation",
+        "asymptotic_derived",
+        "known",
+        "known_framework",
+        "known_equivalence_framework",
+        "known_model_input",
+        "known_or_standard_consequence",
+        "classical_family_repackaged",
+        "conditional_on_RH_standard",
+        "research_target",
+        "false_route",
+        "governance"
+      ],
+      "module": "rh_research_engine.core.knowledge",
+      "name": "KnowledgeStatus"
+    },
+    "rh_research_engine.core.models.ClaimStatus": {
+      "member_count": 8,
+      "members": [
+        "hypothesis",
+        "numerical",
+        "symbolic",
+        "proved",
+        "known",
+        "inferred",
+        "equivalent_rh",
+        "false"
+      ],
+      "module": "rh_research_engine.core.models",
+      "name": "ClaimStatus"
+    },
+    "rh_research_engine.core.models.EvidenceClass": {
+      "member_count": 7,
+      "members": [
+        "numerical",
+        "rigorous-numerical",
+        "symbolic",
+        "proved",
+        "known",
+        "heuristic",
+        "counterexample"
+      ],
+      "module": "rh_research_engine.core.models",
+      "name": "EvidenceClass"
+    },
+    "rh_research_engine.core.promote.GateSeverity": {
+      "member_count": 2,
+      "members": [
+        "block",
+        "warn"
+      ],
+      "module": "rh_research_engine.core.promote",
+      "name": "GateSeverity"
+    },
+    "rh_research_engine.dre.contracts.ClaimEffect": {
+      "member_count": 3,
+      "members": [
+        "supports",
+        "contradicts",
+        "neutral"
+      ],
+      "module": "rh_research_engine.dre.contracts",
+      "name": "ClaimEffect"
+    },
+    "rh_research_engine.mathcert.predicates.TruthValue": {
+      "member_count": 3,
+      "members": [
+        "true",
+        "false",
+        "unknown"
+      ],
+      "module": "rh_research_engine.mathcert.predicates",
+      "name": "TruthValue"
+    },
+    "rh_research_engine.mathcert.verifiers.VerificationStatus": {
+      "member_count": 3,
+      "members": [
+        "accepted",
+        "rejected",
+        "unknown"
+      ],
+      "module": "rh_research_engine.mathcert.verifiers",
+      "name": "VerificationStatus"
+    },
+    "rh_research_engine.patterns.ledger.RevisitVerdict": {
+      "member_count": 5,
+      "members": [
+        "extended",
+        "contradicted",
+        "broken",
+        "incomparable",
+        "retired"
+      ],
+      "module": "rh_research_engine.patterns.ledger",
+      "name": "RevisitVerdict"
+    },
+    "rh_research_engine.patterns.models.PremiseVerdict": {
+      "member_count": 4,
+      "members": [
+        "live",
+        "empty",
+        "degenerate",
+        "inconclusive"
+      ],
+      "module": "rh_research_engine.patterns.models",
+      "name": "PremiseVerdict"
+    },
+    "rh_research_engine.patterns.models.RegularityKind": {
+      "member_count": 6,
+      "members": [
+        "integrality",
+        "exact_equality",
+        "saturated_bound",
+        "constant_ratio",
+        "constant_difference",
+        "sign_constancy"
+      ],
+      "module": "rh_research_engine.patterns.models",
+      "name": "RegularityKind"
+    },
+    "rh_research_engine.patterns.noise.NoiseGround": {
+      "member_count": 5,
+      "members": [
+        "construction",
+        "known_identity",
+        "elementary",
+        "generator",
+        "triaged"
+      ],
+      "module": "rh_research_engine.patterns.noise",
+      "name": "NoiseGround"
+    },
+    "rh_research_engine.properties.models.ClosureMode": {
+      "member_count": 2,
+      "members": [
+        "rigorous",
+        "exploratory"
+      ],
+      "module": "rh_research_engine.properties.models",
+      "name": "ClosureMode"
+    },
+    "rh_research_engine.properties.models.EpistemicStatus": {
+      "member_count": 9,
+      "members": [
+        "known",
+        "proved",
+        "certified",
+        "symbolic_derived",
+        "rigorous_derived",
+        "heuristic",
+        "synthetic",
+        "blocked",
+        "authoritative_policy"
+      ],
+      "module": "rh_research_engine.properties.models",
+      "name": "EpistemicStatus"
+    },
+    "rh_research_engine.properties.models.MathematicalRole": {
+      "member_count": 8,
+      "members": [
+        "mathematical_claim",
+        "mathematical_identity",
+        "mathematical_bound",
+        "mathematical_equivalence",
+        "mathematical_construction",
+        "mathematical_no_go",
+        "governance",
+        "procedural"
+      ],
+      "module": "rh_research_engine.properties.models",
+      "name": "MathematicalRole"
+    },
+    "rh_research_engine.properties.models.ObjectKind": {
+      "member_count": 9,
+      "members": [
+        "function",
+        "sequence",
+        "operator",
+        "kernel",
+        "transform",
+        "parameter",
+        "claim",
+        "expression",
+        "unknown"
+      ],
+      "module": "rh_research_engine.properties.models",
+      "name": "ObjectKind"
+    },
+    "rh_research_engine.properties.models.PropertyKind": {
+      "member_count": 14,
+      "members": [
+        "domain",
+        "codomain",
+        "symmetry",
+        "invariant",
+        "singularity",
+        "zero",
+        "pole",
+        "residue",
+        "growth_bound",
+        "theta_bound",
+        "positivity",
+        "analyticity",
+        "equivalence",
+        "discriminator"
+      ],
+      "module": "rh_research_engine.properties.models",
+      "name": "PropertyKind"
+    },
+    "rh_research_engine.supervisor.compat.HypothesisState": {
+      "member_count": 6,
+      "members": [
+        "proposed",
+        "actionable",
+        "testing",
+        "blocked",
+        "falsified",
+        "advanced"
+      ],
+      "module": "rh_research_engine.supervisor.compat",
+      "name": "HypothesisState"
+    },
+    "rh_research_engine.symbolic.citations.SourceKind": {
+      "member_count": 3,
+      "members": [
+        "paper",
+        "knowledge",
+        "manual"
+      ],
+      "module": "rh_research_engine.symbolic.citations",
+      "name": "SourceKind"
+    },
+    "rh_research_engine.symbolic.models.EquationKind": {
+      "member_count": 4,
+      "members": [
+        "expression",
+        "equation",
+        "inequality",
+        "unknown"
+      ],
+      "module": "rh_research_engine.symbolic.models",
+      "name": "EquationKind"
+    },
+    "rh_research_engine.symbolic.proof_queue.ProofQueueVerdict": {
+      "member_count": 6,
+      "members": [
+        "export_ready",
+        "not_an_equation",
+        "unsupported_fragment",
+        "not_an_identity",
+        "unrenderable",
+        "unparseable"
+      ],
+      "module": "rh_research_engine.symbolic.proof_queue",
+      "name": "ProofQueueVerdict"
+    }
+  }
+}

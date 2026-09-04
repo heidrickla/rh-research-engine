@@ -1,0 +1,86 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "rh-research-engine"
+version = "0.12.0"
+description = "Deterministic research harness for Riemann Hypothesis transform, bound, and counterexample exploration"
+requires-python = ">=3.12"
+
+# Pinned deliberately, on the same reasoning DRE pins its compiler: the
+# dependency is part of the engine identity.
+#
+# SymPy is the sharp case. `srepr` output *is* the formula fingerprint, and
+# `cancel`/`simplify`/`limit` decide what counts as an equivalence, so a SymPy
+# bump can silently change every stored canonical hash and every equivalence
+# verdict. NumPy reductions decide the last bits of every metric.
+#
+# Changing any of these is a deliberate act: expect stored fingerprints and
+# payload hashes to need re-recording, and say so in the commit.
+dependencies = [
+  "mpmath==1.3.0",
+  "sympy==1.14.0",
+  "pydantic==2.13.4",
+  "typer==0.27.0",
+  "rich==15.0.0",
+  "numpy==2.5.1",
+]
+
+[project.optional-dependencies]
+# `cryptography` is in dev as well as its own extra so CI exercises the real
+# signature path rather than the absent-backend branch. Pinned on the same
+# reasoning as the runtime dependencies: it decides whether a DRE receipt is
+# genuine, so which version made that decision is part of the engine identity.
+dev = [
+  "pytest==9.0.3",
+  # Pinned like the rest: it decides how the suite is scheduled, and a suite
+  # that passes serially and fails under a different worker count is a finding
+  # about the suite, so which version made that split is worth recording.
+  "pytest-xdist==3.8.0",
+  "ruff==0.15.21",
+  "cryptography==48.0.1",
+  "python-flint==0.9.0",
+]
+# Optional, and detected rather than assumed. Without it, receipts declaring
+# signature authentication are refused for want of a backend -- the same
+# fail-closed shape as the Arb/FLINT adapter.
+signatures = ["cryptography==48.0.1"]
+# The interval backend behind `rhre symbolic certify-line`. Optional on the
+# same terms and pinned on the same reasoning: Arb decides whether an enclosure
+# holds, so which version decided is part of the claim, and the certificate
+# records it.
+#
+# In `dev` as well, so CI exercises the certified path rather than the
+# absent-backend branch -- the reasoning that put `cryptography` there. Both
+# branches need running: a fail-closed refusal that has never been executed is
+# a refusal nobody has seen work.
+verify = ["python-flint==0.9.0"]
+
+[project.scripts]
+rhre = "rh_research_engine.cli:app"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+# `preview` with `explicit-preview-rules` enables ONLY the preview rules named
+# below by their exact code -- here PLW1514, which is still in preview and is
+# therefore a silent no-op under a bare `--select`. It catches the platform
+# default text codec in `open`, `Path.open`, `Path.read_text`, `Path.write_text`,
+# `codecs.open` and `tempfile.NamedTemporaryFile`.
+preview = true
+explicit-preview-rules = true
+select = ["E", "F", "W", "I", "UP", "B", "PLW1514"]
+ignore = [
+  "E501",  # line length is enforced by the formatter, not the linter
+  "B008",  # typer's Option()/Argument() defaults are the documented idiom
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Re-exports.
+"src/rh_research_engine/**/__init__.py" = ["F401"]

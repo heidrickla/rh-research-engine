@@ -1,0 +1,67 @@
+{
+  "rules": [
+    {
+      "columns": [
+        "sqrt_n",
+        "mertens_conj_rhs"
+      ],
+      "ground": "construction",
+      "kind": null,
+      "reason": "both columns ARE sqrt(n): mertens_conj_rhs was defined as the right-hand side of |M(x)| < sqrt(x), so their equality is the definition restated"
+    },
+    {
+      "columns": [
+        "n",
+        "n_plus_1"
+      ],
+      "ground": "construction",
+      "kind": null,
+      "reason": "n_plus_1 was defined as n + 1, so n - n_plus_1 = -1 is arithmetic rather than structure"
+    },
+    {
+      "columns": [
+        "primepi",
+        "primepi_plus_1"
+      ],
+      "ground": "construction",
+      "kind": null,
+      "reason": "primepi_plus_1 was defined as primepi + 1"
+    },
+    {
+      "columns": [
+        "abs_mu",
+        "mu"
+      ],
+      "ground": "construction",
+      "kind": "saturated_bound",
+      "reason": "abs_mu was defined as |mu|, so abs_mu >= mu is |x| >= x: true of every real column whatsoever, and a statement about the absolute value rather than about the Mobius function. Its tight set is the rows where mu >= 0, which restates the sign of mu rather than adding to it -- the scan already carries that as raw data, and it reached the open ledger characterised UNRECOGNISED and ranked near the top."
+    },
+    {
+      "columns": [
+        "abs_Mertens",
+        "Mertens"
+      ],
+      "ground": "construction",
+      "kind": "saturated_bound",
+      "reason": "abs_Mertens was defined as |Mertens|, so abs_Mertens >= Mertens is |x| >= x: true of every real column, and a statement about the absolute value rather than about M(x). Its tight set is the rows where M(x) >= 0. The sign changes of M are a real object; this record is not about them -- it is the sign of a column read back off the column, and it was reaching the open ledger as unexplained structure with a surprise of 1922."
+    },
+    {
+      "columns": [
+        "totient",
+        "Omega"
+      ],
+      "ground": "elementary",
+      "kind": "saturated_bound",
+      "reason": "phi(n) >= Omega(n) for every n >= 2, with equality exactly at 2, 4 and 6 -- so the tight set the scan could not name is a three-element set, and here is why it is that one. phi is multiplicative with phi(p^a) = p^(a-1)(p-1); Omega is additive. (i) n odd, n > 1: every p_i >= 3, so p_i^(a_i-1)(p_i-1) >= 2*3^(a_i-1) >= a_i+1, giving phi(n) >= prod(a_i+1) >= 1 + Omega(n), strict. (ii) n = 2^a: phi = 2^(a-1) against Omega = a, equal iff a = 1 or 2, so n = 2 and n = 4. (iii) n = 2^a*m with m odd > 1: phi(n) = 2^(a-1)*phi(m) >= 2^(a-1)*(1 + Omega(m)) = 2^(a-1) + 2^(a-1)*Omega(m) >= a + Omega(m), using 2^(a-1) >= a and 2^(a-1) >= 1; equality needs a = 1 together with phi(m) = 1 + Omega(m), and among odd m > 1 that forces a single prime power p^a with p^(a-1)(p-1) = a+1, whose only solution is p = 3, a = 1 -- so n = 6. Checked over n = 2..10^6 by an independent sieve spot-checked against sympy: no violation, and no tight case other than 2, 4, 6."
+    },
+    {
+      "columns": [
+        "n_minus_totient",
+        "Omega"
+      ],
+      "ground": "elementary",
+      "kind": "saturated_bound",
+      "reason": "n - phi(n) >= Omega(n) for every n >= 2, with equality exactly on the primes together with 4. The scan reported the tight set as \"closest description: prime (off by 1)\", which is a number rather than a description; the one is 4, and here is why. n - phi(n) counts the m in [1, n] sharing a factor with n, so it is at least the n/p multiples of the least prime factor p. (i) n = p^a: n - phi(n) = p^(a-1) against Omega = a, equal iff p^(a-1) = a -- a = 1 for every prime, and a = 2 with p = 2 for n = 4; strict beyond, since 2^(a-1) > a for a >= 3. (ii) n not a prime power, Omega(n) >= 3: n/p is a product of Omega(n) - 1 primes each at least 2, so n - phi(n) >= 2^(Omega-1) > Omega. (iii) n = p*q with p < q: n/p = q >= 3 > 2 = Omega. Checked over n = 2..10^6 by an independent sieve spot-checked against sympy: no violation, and 78499 tight cases -- all 78498 primes below 10^6, and 4."
+    }
+  ]
+}

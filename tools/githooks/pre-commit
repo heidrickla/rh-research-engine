@@ -1,0 +1,45 @@
+#!/bin/sh
+# rh-research-engine pre-commit guard.
+#
+# INSTALL, once per clone:
+#
+#     git config core.hooksPath tools/githooks
+#
+# It lives here rather than in `.git/hooks` because a hook under `.git` is not
+# version-controlled and dies with the clone -- so the guard would be present
+# on exactly one machine, which is the machine least likely to need it.
+#
+# BLOCKING, and only one thing blocks. CRLF is not a matter of taste in this
+# repository: certificate hashes, DRE payload hashes, and formula-index digests
+# are computed over exact bytes, and DRE computes `ModelHash` over the raw
+# bytes of a pack. A file that drifts to CRLF gets a different hash, every
+# record referencing it fails replay, and the file looks identical in every
+# editor on Windows.
+#
+# `.gitattributes` already pins `eol=lf` and handles checkout and `git add`.
+# What it cannot see is a tool rewriting a file in place: the index stays LF,
+# the working tree drifts, and `git status` is silent because the filter
+# reconciles them.
+#
+# Committing is the earliest point the author still has the context, and
+# `--fix` heals it in one line.
+
+PY="$(command -v python 2>/dev/null || command -v python3 2>/dev/null)"
+if [ -z "$PY" ]; then
+    # Say so rather than passing quietly. A gate that skips without a word
+    # covers nothing, and the thing skipped here is the blocking check.
+    echo "pre-commit: no python on PATH -- line-ending gate SKIPPED, commit allowed" >&2
+    exit 0
+fi
+
+"$PY" tools/check-line-endings.py --staged >&2 || exit 1
+
+# The formulas are the product, and a broken one does not look broken: it
+# parses, indexes, hashes and cites, and says something its source did not.
+# This runs in about a second, so there is no reason for it to run later than
+# the moment the author still has the context to fix it.
+#
+# It does NOT check that a formula is true. It checks that every consumer
+# reads the same formula the extractor wrote, and that nothing is stored as a
+# placeholder for a function that exists.
+"$PY" tools/formula-guard.py --fast --quiet >&2 || exit 1
