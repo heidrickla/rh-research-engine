@@ -425,13 +425,28 @@ jobs:
 
       # Uploaded rather than committed: the verdict for this specific run,
       # citing this run's ID, kept next to the run that produced it.
+      # v4, AND IT CANNOT BE CONDITIONED. This was v3 deliberately, because
+      # `upload-artifact@v4` refuses client-side on any server that is not
+      # github.com -- GHESNotSupportedError before it makes a request -- while
+      # v3 speaks the artifact API Gitea implements. That reasoning was right
+      # and is now unusable: github.com hard-fails v3 outright, in `Set up job`
+      # with "This request has been automatically failed because it uses a
+      # deprecated version of actions/upload-artifact: v3".
+      #
+      # An `if:` does NOT rescue it. The failure lands at "Getting action
+      # download info", which resolves every action referenced by the job
+      # before a single step runs, so a v3 reference sitting behind a false
+      # condition still fails the job on github.com.
+      #
+      # So: v4, and let it fail softly on the forge. `continue-on-error` keeps
+      # the Gitea job green when v4 refuses to talk to a non-github.com server,
+      # and the report is a convenience artifact -- the gate that produces it
+      # has already passed or failed on its own by this point, and its verdict
+      # is in the log either way.
       - name: Upload the closure report
         if: always()
-      # v3, not v4, and deliberately. `upload-artifact@v4` refuses client-side
-      # on any server that is not github.com -- GHESNotSupportedError, raised
-      # before it makes a request -- so it cannot work against Gitea at all.
-      # v3 speaks the artifact API Gitea implements.
-        uses: actions/upload-artifact@v3
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
         with:
           name: phase1-final-closure
           path: docs/reviews/
