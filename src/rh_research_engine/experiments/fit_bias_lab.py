@@ -119,7 +119,7 @@ def _refusal(ladder: str, reason: str) -> ExperimentResult:
             "bare default. VERIFIED AGAINST THE ARTIFACT, not read off a script.",
             "This experiment needs the prebuilt ladder rungs. THE ARTIFACT IS NOT IN "
             "THIS REPOSITORY AND IS NOT BACKED UP: `ladder-full.npz` exists only in "
-            "`~/rh-data/` on LewisDesktop and on gpurack2, so nobody else can "
+            "a local data directory on the two machines it was built on, so nobody else can "
             "regenerate this record without rebuilding it with tools/build-ladder.py. "
             "That is a limitation of the record and it belongs on the record.",
             "A refusal says nothing about b(N). It says the measurement did not run.",
@@ -336,8 +336,8 @@ def run(
         "spans exactly 0.5000 in l, matching WIDTH = 0.5 and DEFAULT_RUNGS. Checking "
         "it that way is what found the two-builder trap above.",
         "THE ARTIFACT IS NOT IN THIS REPOSITORY AND IS NOT BACKED UP. "
-        "`ladder-full.npz` exists only in `~/rh-data/` on LewisDesktop and on "
-        "gpurack2. A file with no invocation is not regenerable even with infinite "
+        "`ladder-full.npz` exists only in a local data directory on the two machines "
+        "it was built on. A file with no invocation is not regenerable even with infinite "
         "disk, which is why the command above is recorded here rather than left to a "
         "reader to reconstruct.",
         "b(N) is the mean of (fitted l - the slice's own true l) over disjoint "
