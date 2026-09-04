@@ -6,6 +6,8 @@ build-backend = "hatchling.build"
 name = "rh-research-engine"
 version = "0.12.0"
 description = "Deterministic research harness for Riemann Hypothesis transform, bound, and counterexample exploration"
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.12"
 
 # Pinned deliberately, on the same reasoning DRE pins its compiler: the

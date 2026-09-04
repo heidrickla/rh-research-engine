@@ -601,3 +601,14 @@ The Arb/FLINT verifier adapter detects `python-flint` when available and emits
 `MathCertificate`/`VerifierEnvelope` artifacts. Without rigorous interval
 verification it fails closed with `status=unknown`; mpmath/numpy output is never
 relabeled as rigorous.
+
+
+## License
+
+MIT — see [LICENSE](LICENSE).
+
+The mathematical content is the point of this repository, and the licence covers
+the code that produces it. The results themselves are measurements: several are
+recorded here alongside the reason they do NOT settle what they might appear to,
+and the module docstrings carry those limits rather than the summaries. Read
+those before citing a number.
