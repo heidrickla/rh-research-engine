@@ -10,7 +10,7 @@
   ],
   "baseline_sha": "74827dbda6c897ea68e3db025a6fd7b83ec97226",
   "baseline_tag": "rh-lab-v1-baseline-df7016d",
-  "branch": "fix/formulas-parse-correctly",
+  "branch": "main",
   "ci": {
     "note": "generated locally; no CI run to cite",
     "under_ci": false
@@ -19,8 +19,8 @@
     "artifact_schema_version": "1",
     "package": "0.12.0",
     "property_graph_schema_version": "1",
-    "schema_snapshot_enums": 26,
-    "schema_snapshot_models": 81
+    "schema_snapshot_enums": 30,
+    "schema_snapshot_models": 106
   },
   "failed_gates": [],
   "gates": [
@@ -47,19 +47,19 @@
       "why": "Style is not the point; an unused import or an undefined name is usually the visible end of a half-finished edit."
     },
     {
-      "command": "python -m pytest -q",
-      "detail": "748 passed in 51.53s",
+      "command": "python -m pytest -q -p xdist -n auto",
+      "detail": "1357 passed, 2 skipped in 481.94s (0:08:01)",
       "key": "tests",
       "passed": true,
       "skipped": false,
       "subset_of_suite": false,
-      "tests": 748,
+      "tests": 1357,
       "title": "Full test suite",
       "why": "Every behavioural and adversarial invariant in the repository."
     },
     {
       "command": "python tools/snapshot-schemas.py --check",
-      "detail": "schema surface unchanged: 81 models, 26 enums",
+      "detail": "schema surface unchanged: 106 models, 30 enums",
       "key": "schema-snapshot",
       "passed": true,
       "skipped": false,
@@ -70,7 +70,7 @@
     },
     {
       "command": "python tools/inventory-status.py --check",
-      "detail": "status inventory unchanged: 26 vocabularies, 0 substring classifiers",
+      "detail": "status inventory unchanged: 30 vocabularies, 0 substring classifiers",
       "key": "status-inventory",
       "passed": true,
       "skipped": false,
@@ -125,7 +125,7 @@
     },
     {
       "command": "python -m pytest -q tests/test_source_containment.py -k retired",
-      "detail": "1 passed, 15 deselected in 0.09s",
+      "detail": "1 passed, 15 deselected in 0.95s",
       "key": "retired-path",
       "passed": true,
       "skipped": false,
@@ -136,7 +136,7 @@
     },
     {
       "command": "python -m pytest -q tests/test_source_containment.py -k \"legacy or deprecated\"",
-      "detail": "5 passed, 11 deselected in 0.91s",
+      "detail": "5 passed, 11 deselected in 1.32s",
       "key": "legacy-enums",
       "passed": true,
       "skipped": false,
@@ -147,7 +147,7 @@
     },
     {
       "command": "python -m pytest -q tests/test_source_containment.py -k \"spelling or detector\"",
-      "detail": "2 passed, 14 deselected in 0.10s",
+      "detail": "2 passed, 14 deselected in 0.98s",
       "key": "spelling",
       "passed": true,
       "skipped": false,
@@ -158,18 +158,18 @@
     },
     {
       "command": "python -m pytest -q tests/test_public_api_attack_matrix.py",
-      "detail": "141 passed in 0.89s",
+      "detail": "142 passed in 1.00s",
       "key": "attack-matrix",
       "passed": true,
       "skipped": false,
       "subset_of_suite": true,
-      "tests": 141,
+      "tests": 142,
       "title": "Public API authority attack matrix",
       "why": "Every public entry point, attacked the way a motivated user would attack it: construct the record that says what you want, label it convincingly, and hand it to the thing that reads labels."
     },
     {
       "command": "python -m pytest -q tests/test_public_api_attack_matrix.py tests/test_contracts.py -k \"no_public_composition or real_trust_registry or trust or activation\"",
-      "detail": "102 passed, 154 deselected in 0.84s",
+      "detail": "102 passed, 155 deselected in 0.98s",
       "key": "empty-trust",
       "passed": true,
       "skipped": false,
@@ -180,18 +180,18 @@
     },
     {
       "command": "python -m pytest -q tests/test_determinism.py tests/test_replay_identity.py",
-      "detail": "51 passed in 2.62s",
+      "detail": "53 passed in 2.67s",
       "key": "determinism",
       "passed": true,
       "skipped": false,
       "subset_of_suite": true,
-      "tests": 51,
+      "tests": 53,
       "title": "Determinism smoke tests",
       "why": "Same inputs, same model pack, same engine fingerprint -- same bytes. Checked across separate processes and PYTHONHASHSEED values, because set iteration order is seeded per interpreter and in-process tests all share one."
     },
     {
       "command": "python -m pytest -q -k worker",
-      "detail": "15 passed, 733 deselected in 0.97s",
+      "detail": "15 passed, 1344 deselected in 1.16s",
       "key": "worker-boundary",
       "passed": true,
       "skipped": false,
@@ -202,7 +202,7 @@
     },
     {
       "command": "python -m pytest -q tests/test_fail_closed_state.py",
-      "detail": "19 passed in 41.10s",
+      "detail": "19 passed in 46.39s",
       "key": "missing-memory",
       "passed": true,
       "skipped": false,
@@ -212,8 +212,8 @@
       "why": "An absent research record is not an empty one. Every authoritative command must exit nonzero, write no artifact, and mutate no state."
     }
   ],
-  "head_sha": "76b5cbae7b9fd577c40b56b609931ef2ebc6bb2b",
-  "head_short": "76b5cba",
+  "head_sha": "25c4825954d0532781c6c9ef986b195462913274",
+  "head_short": "25c4825",
   "inert_integrations": [
     {
       "effect": "No obligation can be discharged, so no RH-equivalent premise can gain frontier credit through a discharge.",
@@ -236,7 +236,7 @@
   ],
   "quick_mode": false,
   "report": "phase1-final-gate",
-  "test_count": 748,
+  "test_count": 1357,
   "trust_registries": {
     "dre": {
       "accepted_authentication_mechanisms": [
@@ -263,8 +263,8 @@
         "expression hash, interval endpoints, and precision bound into the certificate"
       ],
       "max_confidence": "rigorous_numerical",
-      "registered_adapter_count": 0,
-      "rigorous_verification_active": false
+      "registered_adapter_count": 1,
+      "rigorous_verification_active": true
     }
   },
   "verdict": "READY TO MERGE",

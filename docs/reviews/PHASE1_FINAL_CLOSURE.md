@@ -10,15 +10,15 @@ against a committed copy.
 
 | | |
 |---|---|
-| Branch | `fix/formulas-parse-correctly` |
-| Head | `76b5cbae7b9fd577c40b56b609931ef2ebc6bb2b` |
+| Branch | `main` |
+| Head | `25c4825954d0532781c6c9ef986b195462913274` |
 | Working tree | dirty |
 | Frozen baseline | `rh-lab-v1-baseline-df7016d` (`74827dbda6c8`) |
-| Tests | 748 passed |
+| Tests | 1357 passed |
 | Package | 0.12.0 |
 | Artifact schema | v1 |
 | Property graph schema | v1 |
-| Schema surface | 81 models, 26 enums |
+| Schema surface | 106 models, 30 enums |
 | CI run | generated locally; no CI run to cite |
 
 ## The acceptance invariant
@@ -33,7 +33,7 @@ against a committed copy.
 | Registry | Active | Entries |
 |---|---|---|
 | DRE discharge authority | False | 0 |
-| Rigorous verifier adapters | False | 0 |
+| Rigorous verifier adapters | True | 1 |
 | Receipt signing keys | False | 0 |
 
 All three are module-private. No public function accepts a trust set, and
@@ -50,21 +50,21 @@ Signature backend available: `True` — a fact about the environment, reported h
 |---|---|---|
 | Line endings | pass | line endings: OK (tracked text files are LF) |
 | Ruff | pass | All checks passed! |
-| Full test suite | pass | 748 passed in 51.53s |
-| Schema surface unchanged | pass | schema surface unchanged: 81 models, 26 enums |
-| Status vocabularies unchanged | pass | status inventory unchanged: 26 vocabularies, 0 substring classifiers |
+| Full test suite | pass | 1357 passed, 2 skipped in 481.94s (0:08:01) |
+| Schema surface unchanged | pass | schema surface unchanged: 106 models, 30 enums |
+| Status vocabularies unchanged | pass | status inventory unchanged: 30 vocabularies, 0 substring classifiers |
 | Knowledge invariants unchanged since the frozen baseline | pass | knowledge invariants unchanged since rh-lab-v1-baseline-df7016d |
 | Authoritative state unchanged | pass | authoritative state unchanged: 42 knowledge records, no-go ['K008', 'K032', 'K034', 'K038'] |
 | Knowledge relocation is consistent | pass | 42 records, no-go ['K008', 'K032', 'K034', 'K038'] |
 | Durable memory integrity | pass | dependency references resolve. |
-| Deprecated-path AST scan | pass | 1 passed, 15 deselected in 0.09s |
-| Legacy-enum containment scan | pass | 5 passed, 11 deselected in 0.91s |
-| Status-substring semantic scan | pass | 2 passed, 14 deselected in 0.10s |
-| Public API authority attack matrix | pass | 141 passed in 0.89s |
-| Empty-trust invariant | pass | 102 passed, 154 deselected in 0.84s |
-| Determinism smoke tests | pass | 51 passed in 2.62s |
-| Worker self-promotion | pass | 15 passed, 733 deselected in 0.97s |
-| Missing-memory end-to-end | pass | 19 passed in 41.10s |
+| Deprecated-path AST scan | pass | 1 passed, 15 deselected in 0.95s |
+| Legacy-enum containment scan | pass | 5 passed, 11 deselected in 1.32s |
+| Status-substring semantic scan | pass | 2 passed, 14 deselected in 0.98s |
+| Public API authority attack matrix | pass | 142 passed in 1.00s |
+| Empty-trust invariant | pass | 102 passed, 155 deselected in 0.98s |
+| Determinism smoke tests | pass | 53 passed in 2.67s |
+| Worker self-promotion | pass | 15 passed, 1344 deselected in 1.16s |
+| Missing-memory end-to-end | pass | 19 passed in 46.39s |
 
 ### What each gate is for
 
@@ -76,7 +76,7 @@ A line ending is part of a hash here: certificate hashes, DRE payload hashes, an
 
 Style is not the point; an unused import or an undefined name is usually the visible end of a half-finished edit.
 
-**Full test suite** — `python -m pytest -q`
+**Full test suite** — `python -m pytest -q -p xdist -n auto`
 
 Every behavioural and adversarial invariant in the repository.
 
