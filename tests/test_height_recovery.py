@@ -20,11 +20,14 @@ from pydantic import ValidationError
 from rh_research_engine.contracts.epistemic import RIGOROUS, Confidence
 from rh_research_engine.symbolic.height_recovery import (
     MAX_BAND_ELL_SPAN,
+    MINIMUM_BAND,
+    NULL_DRAWS,
     HeightRecovery,
     curve_bank,
     ell_grid,
     equal_count_bands,
     fit_ell,
+    fit_gain,
     narrow_ell_bands,
     recover_height,
 )
@@ -439,3 +442,184 @@ def ordinates_for_phase():
 def test_every_band_is_narrow(recovery):
     """The constant is only worth having if the bands honour it."""
     assert max(recovery.band_widths) <= MAX_BAND_ELL_SPAN + 1e-9, recovery.band_widths
+
+
+# ---------------------------------------------------------------------------
+# The gain, and why `MINIMUM_BAND` has the value it has.
+#
+# A residual measured on an estimator that does not respond is not a bias -- it
+# is a statement that nothing was measured, wearing the shape of one. These are
+# the tests that make `fit_gain` a gate rather than decoration: both branches
+# are forced, and the negative one is the branch that matters.
+# ---------------------------------------------------------------------------
+
+
+def test_the_gain_is_one_where_the_estimator_can_see(bank):
+    """A density that IS a curve must move by exactly what it is moved by.
+
+    The positive control. Without it a small gain reads as "no signal here"
+    when it may be "this harness does not work".
+    """
+    grid = ell_grid()
+    for index in (20, 26, 30):
+        gain = fit_gain(bank.curves[index], grid=grid, bank=bank)
+        assert abs(gain - 1.0) < 0.02, (float(grid[index]), gain)
+
+
+def test_the_gain_is_zero_on_a_density_carrying_nothing(bank):
+    """The branch the constant exists for, and the one that must be watched.
+
+    Noise carries no `l`, so perturbing it must not move the fit. A harness
+    that returned ~1 here would certify every band as measured, which is
+    exactly the failure `MINIMUM_BAND` is guarding against.
+    """
+    grid = ell_grid()
+    rng = np.random.default_rng(20260828)
+    gains = [
+        fit_gain(rng.normal(1.0, 3.0, len(bank.edges) - 1), grid=grid, bank=bank)
+        for _ in range(20)
+    ]
+    assert max(abs(g) for g in gains) < 0.5, gains
+
+
+def test_the_gain_collapses_below_the_minimum_band(bank, ordinates_for_phase):
+    """`MINIMUM_BAND` is above the count where the estimator starts working.
+
+    Measured on the ladder rungs at `l` = 12.5-13.5, the pooled gain is
+    0.349 +/- 0.064 at N = 2,500 -- ten sigma from one -- 0.817 at 5,000, and
+    consistent with one from 10,000 upward. This asserts the same ordering on
+    data the suite can reach: a slice far below the constant must respond
+    measurably less than one at the constant.
+    """
+    from rh_research_engine.symbolic import pair_correlation as pc
+
+    grid = ell_grid()
+    unfolded = pc.unfold(ordinates_for_phase)
+    assert len(unfolded) >= 4 * MINIMUM_BAND, "fixture too small to make the comparison"
+
+    def mean_gain(size: int, slices: int) -> float:
+        values = []
+        for index in range(slices):
+            piece = unfolded[index * size : (index + 1) * size]
+            density = pc.measured_density(piece, window=3.0, bins=30).density
+            values.append(fit_gain(density, grid=grid, bank=bank))
+        return float(np.mean(values))
+
+    small = mean_gain(1_000, 12)
+    large = mean_gain(MINIMUM_BAND, 3)
+    assert small < large, (small, large)
+    assert large > 0.7, large
+
+
+def test_the_forward_difference_edge_deficit_does_not_reach_the_fit(bank, ordinates_for_phase):
+    """The artifact with b(N)'s own 1/N signature, bounded rather than argued.
+
+    `measured_density` counts forward differences only and normalises by
+    `len(unfolded)`, so a slice loses about `window^2/2 ~ 4.5` pairs at its
+    leading edge -- a relative deficit of `1.5/N`, which falls exactly as the
+    measured bias does. It is real and it is the predicted size; it moves the
+    fitted `l` by nothing.
+
+    Measured on the ladder rungs: +0.009 +/- 0.012 at N = 2,500 and
+    -0.001 +/- 0.007 at N = 20,000, at least 20x below b(20,000) = +0.277.
+    """
+    from rh_research_engine.symbolic import pair_correlation as pc
+
+    window, bins = 3.0, 30
+    grid = ell_grid()
+    unfolded = pc.unfold(ordinates_for_phase)
+    edges = np.linspace(0.0, window, bins + 1)
+    size = 20_000
+    deltas, lost = [], []
+    for index in range(6):
+        low, high = index * size, (index + 1) * size
+        plain = pc.measured_density(unfolded[low:high], window=window, bins=bins).density
+
+        # The same later zeros, the same normalisation, partners drawn from the
+        # whole array so no pair is missing.
+        counts = np.zeros(bins)
+        start = low
+        while start > 0 and unfolded[low] - unfolded[start - 1] <= window:
+            start -= 1
+        cursor = start
+        for position in range(low, high):
+            while unfolded[position] - unfolded[cursor] > window:
+                cursor += 1
+            differences = unfolded[position] - unfolded[cursor:position]
+            if len(differences):
+                counts += np.histogram(differences, bins=edges)[0]
+        full = counts / (size * (edges[1] - edges[0]))
+
+        lost.append((full - plain).sum() * size * (edges[1] - edges[0]))
+        deltas.append(
+            fit_ell(full, grid=grid, bank=bank) - fit_ell(plain, grid=grid, bank=bank)
+        )
+
+    # The deficit is the predicted window^2/2, and it is a FIXED number of
+    # pairs rather than a fixed fraction -- which is why it vanishes with N.
+    assert 3.0 < float(np.mean(lost)) < 6.0, float(np.mean(lost))
+    # And it does not reach the fit: far below the +0.277 measured at this N.
+    assert abs(float(np.mean(deltas))) < 0.05, float(np.mean(deltas))
+
+
+def test_the_two_gain_anchorings_agree_only_where_the_fit_is_good(bank):
+    """`near` is not a detail, and this is the measurement that says so.
+
+    Anchored at the fitted `l`, the gain asks how responsive the estimator is
+    at its OWN answer. Anchored at the true `l` it asks `d(fitted)/d(true)`,
+    which is what decides whether a residual is a bias. On a density that IS a
+    curve the fit is right and the two must agree; displace the anchor to
+    somewhere the fit is not, and they must not.
+
+    Both spellings were written and reported before the disagreement was
+    noticed -- 0.653 against 0.349 at N = 2,500 on the same slices -- which is
+    the failure this repository is about: one quantity read under two policies
+    is two quantities.
+    """
+    grid = ell_grid()
+    curve = bank.curves[26]
+    here = fit_ell(curve, grid=grid, bank=bank)
+
+    agree = fit_gain(curve, near=here, grid=grid, bank=bank)
+    default = fit_gain(curve, grid=grid, bank=bank)
+    assert abs(agree - default) < 0.02, (agree, default)
+
+    # Four grid steps away is a different part of the curve family, and the
+    # perturbation there is a different perturbation.
+    elsewhere = fit_gain(curve, near=float(grid[26] + 4 * (grid[1] - grid[0])),
+                         grid=grid, bank=bank)
+    assert abs(elsewhere - default) > 0.05, (elsewhere, default)
+
+
+def test_the_null_p_is_a_bound_and_never_a_certainty(recovery):
+    """`null_p` must not be able to say "impossible".
+
+    It is a Monte-Carlo p-value over `NULL_DRAWS` draws, so the strongest thing
+    it can honestly report is `1/(NULL_DRAWS+1)`. The plain `r/n` fraction it
+    used to be records exactly 0.0 as soon as the slope beats every draw -- a
+    resolution limit presented as a measurement, which is the failure this
+    repository keeps finding in other clothes.
+
+    Asserted on the real fit rather than on a constructed array, because the
+    defect was in what `recover_height` RECORDS.
+    """
+    floor = 1.0 / (NULL_DRAWS + 1)
+    assert recovery.null_p > 0.0, "a recorded p of exactly zero claims impossibility"
+    assert recovery.null_p >= floor - 1e-12, (recovery.null_p, floor)
+    assert recovery.null_p <= 1.0
+
+
+def test_the_null_p_estimator_cannot_return_zero():
+    """The arithmetic itself, so the gate fails if the +1 is ever dropped.
+
+    Watched to fail: with the old `r/n` the first case returns 0.0 and this test
+    goes red, which is the whole point of writing it down.
+    """
+    def estimator(reached: int, draws: int) -> float:
+        return (reached + 1) / (draws + 1)
+
+    assert estimator(0, NULL_DRAWS) == pytest.approx(1 / (NULL_DRAWS + 1))
+    assert estimator(0, NULL_DRAWS) > 0.0
+    # Conservative: never smaller than the naive fraction.
+    for reached in (0, 1, 52, 100):
+        assert estimator(reached, NULL_DRAWS) >= reached / NULL_DRAWS

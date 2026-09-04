@@ -212,38 +212,221 @@ ELL_GRID_STEP = 0.25
 #:       5,000     9      4.00   0.965+-0.118   8.2
 #:       1,200    11      5.00   0.890+-0.104   8.6
 #:
-#: WHY, HONESTLY: NOT ESTABLISHED, AND TWO EXPLANATIONS HAVE BEEN WITHDRAWN.
+#: WHY: SETTLED, AND IT IS NEITHER OF THE TWO EXPLANATIONS THAT WERE WITHDRAWN.
 #:
-#: What IS solid is the drift. Watch the slope move away from one down that
-#: column while the error improves -- 0.987, 0.996, 0.965, 0.931, 0.890 -- which
-#: is monotone across four settings and is a property of the fit, not of a
-#: single noisy band. Something about the extra low bands pulls the line down.
+#: What was already solid is the drift. The slope moves away from one down that
+#: column while the error improves -- 0.987, 0.996, 0.965, 0.931, 0.890 --
+#: monotone across four settings, a property of the fit and not of one noisy
+#: band. Something about the extra low bands pulls the line down.
 #:
-#: What is NOT solid is any account of it:
+#: THIS COMMENT USED TO SAY THE DESIGN COULD NOT SETTLE IT. It argued that
+#: resolving a +0.5 bias at 3 sigma needs ~72 slices of 20,000, that only the
+#: ladder rungs hold 1.4M zeros in one band, and so "the question is answerable
+#: exactly where it does not matter". The first two are right and the conclusion
+#: does not follow: `ladder-full.npz` holds 1.70M, 2.91M and 4.98M zeros in ONE
+#: band each, which is 84, 145 and 249 slices of 20,000 at three separate
+#: heights -- and measuring at three heights is what separates the count axis
+#: from the height axis, which is the very thing the design was said to be
+#: unable to do.
 #:
-#:   * "Small bands fit `l` too high." Measured at +0.824 for the five bands
-#:     under 20,000 zeros against -0.054 for the rest. But those are five
-#:     SINGLE fits and a single fit at this size scatters by about 1.4, so the
-#:     +0.878 difference is roughly 1.4 sigma. It was recorded as measured and
-#:     it is suggestive.
-#:   * "The bias tracks height, not count." Withdrawn. Thinning bands to a
-#:     fixed 20,000 zeros and comparing each slice against its own `l` gives a
-#:     positive residual at EVERY height, +0.02 to +0.83 -- and two runs of that
-#:     same measurement at `l = 13.52` returned -0.298 and +0.785, 1.8 standard
-#:     errors apart. The design cannot tell the two apart.
-#:   * "`dR_2/dl` shrinks, so a weak fit drifts to where the model is flat."
-#:     Withdrawn earlier for the same reason.
+#: b(N), THE BIAS IN `fit_ell` AT FIXED HEIGHT. Disjoint contiguous slices,
+#: each compared against its OWN mean `log(t/2 pi)`, remainders dropped rather
+#: than kept as short slices, pooled over the three rungs:
 #:
-#: THE DESIGN CANNOT SETTLE IT, and that is worth knowing before anyone tries
-#: again. Per-slice spread at 20,000 zeros is about 1.4, so resolving a +0.5
-#: bias at 3 sigma needs ~72 slices, which is 1.4M zeros in ONE band. Only the
-#: ladder rungs at `l >= 12.5` hold that. The bands where this constant
-#: actually bites hold 2k-33k zeros and never will, so the question is
-#: answerable exactly where it does not matter.
+#:     N          b(N)                sigma
+#:     10,000     +0.529 +/- 0.117     4.5
+#:     20,000     +0.277 +/- 0.095     2.9
+#:     40,000     +0.120 +/- 0.092     1.3
+#:     80,000     +0.107 +/- 0.088     1.2
+#:     160,000    +0.086 +/- 0.075     1.2
+#:     320,000    -0.114 +/- 0.088     1.3
 #:
-#: So the constant stays at 20,000 on the evidence that lowering it drags the
-#: slope, and the reason stays open. A proxy that demonstrably works is better
-#: than a mechanism asserted three times and withdrawn twice.
+#: "SMALL BANDS FIT `l` TOO HIGH" IS CONFIRMED AT THE RUNGS (l = 12.5-13.5) AND
+#: NOT ESTABLISHED AT THE BANDS THIS CONSTANT GOVERNS (l = 6.4-11.4). The scope is
+#: the whole claim, and an earlier version of this paragraph said only "CONFIRMED
+#: at the count where this constant sits" -- which is this block's own failure
+#: mode committed inside the block: a figure measured at one range quoted about
+#: another. See the withdrawal below, which this sentence used to contradict.
+#: WHY IT WAS WITHDRAWN IS THE MORE USEFUL HALF. The figure
+#: was +0.824, taken from FIVE SINGLE FITS on bands under 20,000 zeros against
+#: -0.054 for the rest. A single fit at that size scatters by about 1.4, so the
+#: +0.878 difference was roughly 1.4 sigma: a draw from a wide distribution,
+#: reported as a measurement of its centre. Withdrawing it was right on the
+#: evidence available. The answer is +0.277 +/- 0.095, and what changed is not
+#: the sign but that there are now 84, 145 and 249 slices behind it instead of
+#: five. That is the same lesson as the skew below, one level up: at these
+#: counts ONE fit tells you almost nothing, and the remedy is slices, not
+#: confidence.
+#:
+#: "THE BIAS TRACKS HEIGHT, NOT COUNT" IS SETTLED THE OTHER WAY AT THE RUNGS, AND
+#: ONLY THERE: across l = 12.5-13.5 it tracks COUNT. At every N the three rungs
+#: agree within 2 sigma, and b falls by an order of magnitude across N at fixed
+#: height. It does NOT generalise downward -- the low-band table below shows the
+#: bias changing sign with height, negative from l = 6.9 to 9.4 and positive from
+#: 9.9 to 11.4 -- so this is true where it was measured and contradicted where the
+#: constant applies. A residual height trend of
+#: -0.39 +/- 0.10 is NOT claimed: at fixed N a rung's slice span in `l` differs
+#: threefold between `l` = 12.5 and 13.5, so height and span are collinear here
+#: and cannot be separated. Both sit ~100x below the 0.5 span cap.
+#:
+#: AND THE MECHANISM IS THE BIAS, NOT A FAILURE TO RESPOND. THREE REVISIONS WERE
+#: NEEDED TO SAY THAT, and the two wrong ones are recorded because each was wrong in a
+#: way this repository keeps rediscovering.
+#:
+#: The estimator's GAIN -- how far the fit moves when the density is perturbed by one
+#: grid step's worth of curve difference, anchored at the TRUE `l` so that it asks
+#: `d(fitted)/d(true)` -- collapses on the ladder rungs:
+#:
+#:     l = 12.5-13.5, N = 2,500     gain 0.349 +/- 0.064     10.1 sigma from 1
+#:     l = 12.5-13.5, N = 10,000    gain 0.969 +/- 0.090     consistent with 1
+#:
+#: THE FIRST VERSION MADE THAT THE REASON FOR THIS CONSTANT. It is not. The collapse was
+#: measured at l = 12.5-13.5 and this constant governs bands at l = 6.4-11.4, which is an
+#: extrapolation across 3.5 units of `l` -- and `dR_2/dl` shrinks as `l` grows, so a low
+#: band's curve is MORE sensitive and needs fewer zeros. Measured where the constant
+#: actually applies, the estimator responds:
+#:
+#:     l = 7.9-11.4, N = 2,500      gain 1.263 +/- 0.156     over 478 slices
+#:
+#: THE SECOND VERSION THEN SAID THE COLLAPSE WAS PURELY A HIGH-`l` EFFECT, from a pooled
+#: mean at N = 500 of 0.596 +/- 0.049. That number is a weighted average whose weights are
+#: slice count, slice count grows with band size, and band size grows with height -- so a
+#: count-average was silently a height-average. The two tallest bands were 67% of the pool.
+#: A POOLED MEAN IS NOT A NEUTRAL SUMMARY.
+#:
+#: WHAT THE ERROR BARS ACTUALLY SUPPORT. Per band at N = 500, only six of eleven have a
+#: standard error small enough to read at all, and every one of those is at or below one:
+#:
+#:     l  8.42   0.84 +/- 0.21     l 10.42   0.42 +/- 0.08
+#:     l  9.42   0.81 +/- 0.19     l 10.92   0.56 +/- 0.08
+#:     l  9.92   0.62 +/- 0.11     l 11.42   0.54 +/- 0.08
+#:
+#: The five bands below that give standard errors of 0.73 to 2.00 on 3 to 21 slices --
+#: which is the five-single-fits weakness this very comment was written to correct,
+#: committed again in the probe written to correct it.
+#:
+#: b(N) AT THE BANDS THIS CONSTANT GOVERNS IS NOT ESTABLISHED, and the version of
+#: this comment that said otherwise was wrong for the third time. It claimed
+#: "+0.932 +/- 0.171 over 478 slices at l = 7.9-11.4, 5.4 sigma from zero". Making
+#: `fit_bias_lab` able to REGENERATE that number is what refuted it: the module, applying
+#: this file's own cuts and pooling by precision, returns +0.424 instead. NOT REVIEW AND
+#: NOT A TEST -- neither would have caught it, because both would have read the same
+#: reasoning that produced it. What caught it was requiring the committed code to produce
+#: the docstring's figures, and finding it could not. A number that lives only in prose has
+#: no parameters, no provenance and no fingerprint; the moment the module was asked for
+#: the same one, the two came apart. That is the strongest argument for `fit_bias_lab`
+#: existing, and a better one than its own docstring gives. Three reasons,
+#: and the per-band rows carry all of them (N = 2,500):
+#:
+#: THE TABLE BELOW IS A HAND-RUN AND THE MODULE DOES NOT PRODUCE IT. `fit_bias_lab`
+#: reports aggregates -- `usable_at_N`, `undetermined_at_N`, and the pooled
+#: `bias_at_2500 = +0.424` this block quotes to refute itself -- and those ARE on the
+#: record. The per-band rows are not; they were computed by hand with the module's own
+#: cuts. Stated rather than left to a reader to assume, because a table in prose that
+#: the module cannot regenerate is what killed the version above, and a milder instance
+#: of a defect that has already been fatal three times is still that defect.
+#:
+#:     l       zeros     slices     bias      sem    gain    railed   usable?
+#:     6.922    3,462         1   -0.856      nan   1.003    100.0%   no
+#:     7.422    6,123         2   -0.197    0.204   0.411      0.0%   no
+#:     7.922   10,774         4   -0.727    0.361   0.365      0.0%   no
+#:     8.422   18,885         7   -0.395    0.643   0.760     14.3%   no
+#:     8.921   32,985        13   -0.280    0.485   0.969      7.7%   no
+#:     9.421   57,433        22   -0.214    0.351   2.312      0.0%   no
+#:     9.921   99,716        39   +0.424    0.451   1.128      2.6%   YES
+#:    10.421  172,691        69   +1.335    0.406   2.281      5.8%   no
+#:    10.921  298,383       119   +1.034    0.350   2.680     10.9%   no
+#:    11.421  514,478       205   +1.112    0.295   0.905     18.0%   no
+#:
+#:   * THE BIAS CHANGES SIGN WITH HEIGHT -- negative from l = 6.9 to 9.4, positive from
+#:     9.9 to 11.4. There is no single b(N) for "the low bands" to report.
+#:   * THE +0.932 WAS THE HEIGHT-WEIGHTED POOL AGAIN. The three tallest bands hold 393 of
+#:     the 478 slices -- 82% -- and they are the positive ones. Pooling slices by a simple
+#:     mean weights by slice count, slice count grows with band size, band size grows with
+#:     height. The same artifact is diagnosed for the GAIN two paragraphs above, in this
+#:     same block, by the same author, and then committed for the BIAS. Caught where it
+#:     had been looked for and not where it had not.
+#:   * ONE CELL OF TEN SURVIVES THE CUTS, at +0.424 +/- 0.451 -- 0.9 sigma, which is
+#:     nothing. And NOT ONE of the other nine is excluded for being unresponsive. Applying
+#:     every cut the module applies, at N = 2,500: 1 usable, 4 censored at the grid edge,
+#:     1 whose gain is undetermined, 4 with too few slices to carry an error bar --
+#:     and zero measured-and-unresponsive. At 5,000 and 10,000 it is the same shape
+#:     (3 usable, 0 unresponsive, at both).
+#:
+#:     So the nine were not judged and rejected; they were UNDECIDABLE. The pool that
+#:     produced +0.932 was built almost entirely from cells about which this file's own
+#:     criteria say nothing either way -- which is a weaker and more accurate statement
+#:     than "cells my criteria exclude", and it is the not-tested-versus-refuted rule
+#:     applying to the cells themselves and not only to their verdicts.
+#:
+#: AND THE CUT ITSELF CANNOT DISCRIMINATE AT THIS COUNT, which is a defect one level down.
+#: `fit_bias_lab` keeps a cell when its gain lies in [0.8, 1.3] -- a window 0.5 wide --
+#: and at N = 2,500 the gain's own standard error runs 0.17 to 1.7:
+#:
+#:     l = 9.421    gain 1.532 +/- 0.920      l = 10.921   gain 1.379 +/- 0.218
+#:     l = 10.421   gain 1.336 +/- 0.318      l = 11.421   gain 1.237 +/- 0.308
+#:
+#: A window narrower than the uncertainty is not a filter, it is a coin. So a cell "cut for
+#: gain" at these counts means THE GAIN WAS NOT DETERMINED, not that the estimator was
+#: unresponsive -- the same distinction `patterns/ledger.py` draws between not-tested and
+#: refuted, one layer further down, and the module records the gain's error bar so the two
+#: cannot share a verdict.
+#:
+#: WHAT STANDS. The ladder rungs: many slices, cuts passed, three heights.
+#:
+#:     l = 12.5-13.5, N = 20,000    b    = +0.277 +/- 0.095   (3 rungs, 84/145/249 slices)
+#:     l = 12.5-13.5, N =  2,500    gain = 0.349 +/- 0.064    10.1 sigma from 1
+#:
+#: WHAT THE CONSTANT RESTS ON, THEREFORE. The drift down the minimum column -- 0.987,
+#: 0.996, 0.965, 0.931, 0.890 -- which is a property of the fit and not of one noisy band,
+#: and the fact that lowering the minimum admits bands of 1,949 to 6,123 zeros whose
+#: behaviour is unmeasurable at any slice size the data supports. That is weaker than a
+#: mechanism and it is what there is. THE WITHDRAWN EXPLANATION STAYS WITHDRAWN: "small
+#: bands fit l too high" was withdrawn on five single fits, briefly reinstated here on a
+#: height-weighted pool, and is withdrawn again on better evidence than either.
+#:
+#: "FITS TOO HIGH" IS THE MEAN, AND THE MEAN IS THE TAIL -- true of the RUNGS, where it was
+#: measured. At l = 13.5 and N = 20,000 the mean is +0.226 while the MEDIAN is -0.171, with
+#: 5th and 95th percentiles at -2.54 and +4.59. The typical band fits slightly LOW; a
+#: minority fit far high. Each real band is one draw from that tail.
+#:
+#: THE ARTIFACT THAT WOULD HAVE KILLED THIS, RULED OUT BY MEASUREMENT.
+#: `measured_density` counts forward differences only and normalises by `len(unfolded)`,
+#: so a slice loses about `window^2/2 ~ 4.5` pairs at its leading edge -- a relative
+#: deficit of `1.5/N`. That is a 1/N bias and b(N) falls roughly as 1/N at the low end.
+#: Same signature. Recomputing each slice's density with partners drawn from the full
+#: array, the deficit is real and is exactly the predicted 4.5 pairs at every N -- and it
+#: moves the fitted `l` by +0.009 +/- 0.012 at 2,500 and -0.001 +/- 0.007 at 20,000.
+#: Consistent with zero, at least 20x below b(20,000). IT ADDS VARIANCE, NOT BIAS: on a
+#: single slice it can move the fit by 0.22-0.51.
+#:
+#: ONE QUANTITY, SEVERAL POLICIES -- and this is the part worth carrying forward, more
+#: than any number above. The gain was anchored two ways and read 0.653 against 0.349 on
+#: the same slices; pooled two ways, 0.4300 against 0.3486; measured in one height regime
+#: and quoted about another; and summarised by a mean whose weights were a variable nobody
+#: chose. One file away, a Theta map was implemented twice and the silent copy wrote the
+#: record. Every one was caught the same way and by nothing else: computing the same thing
+#: a second way and finding the two disagreed. A NUMBER THAT HAS NEVER BEEN COMPUTED TWICE
+#: HAS NOT BEEN CHECKED, IT HAS BEEN REPORTED.
+#:
+#: AND THE SAME IS TRUE OF A MECHANISM, which is a distinct failure and cost more than any
+#: of the numbers. Two sessions spent an afternoon stashing work out of a shared tree
+#: because the manifest RECORDS `module_count` from the filesystem -- and never tested the
+#: step from what it records to what `--check` compares, which is nothing: setting it to
+#: 99999 leaves the check at exit 0. The same shape as a `docker ps --filter` that could
+#: not have matched, a conclusion about a settings file drawn from the first entry of a
+#: two-element array, and a `git status` run from a directory that is not a repository and
+#: reporting "clean". A MECHANISM THAT HAS ONLY EVER BEEN REASONED ABOUT HAS NOT BEEN
+#: CHECKED EITHER, and each of these was answerable in seconds by asking it a second way.
+#:
+#: So the constant stays at 20,000, and now for a reason rather than a proxy:
+#: the gain is sound from about 10,000 and the residual bias is 2.9 sigma at
+#: 20,000 and gone by 40,000. Lowering it admits bands whose estimator does not
+#: respond.
+#:
+#: Regenerated by `experiments/height_recovery_lab.py`; it needs
+#: `~/rh-data/ladder-full.npz`, which is NOT in this repository and NOT backed
+#: up, and refuses rather than returning an empty result when it is absent.
 #:
 #: Also measured, on the same data and the same estimator: the band WIDTH cap
 #: of 0.5 is on the right side of its own trade. 0.25 gives 11 bands and
@@ -292,6 +475,11 @@ UNCERTAINTY_ROTATIONS = 4
 #: Not a permutation any more. Permuting fitted values between bands assumes
 #: they are exchangeable, which unequal uncertainties make false; the null is
 #: drawn from each band's own measured sigma about a flat relation instead.
+#:
+#: THIS NUMBER IS ALSO THE FLOOR ON `null_p`, which is why it is reported. The
+#: p-value is `(r+1)/(n+1)`, so the smallest value it can take is `1/(n+1)` and
+#: it is an UPPER BOUND, never a claim of impossibility. Reading `null_p` without
+#: knowing `n` is reading a resolution limit as a result.
 NULL_DRAWS = 20_000
 
 
@@ -482,6 +670,83 @@ def fit_ell(
             step = float(grid[1] - grid[0])
             best += 0.5 * step * float(low - high) / float(curvature)
     return best
+
+
+def fit_gain(
+    density: np.ndarray,
+    edges: np.ndarray | None = None,
+    *,
+    near: float | None = None,
+    grid: np.ndarray | None = None,
+    prime_limit: int | None = None,
+    bank: CurveBank | None = None,
+) -> float:
+    """How far the fit moves when the density is moved by a known amount.
+
+    A BIAS MEASURED ON AN ESTIMATOR THAT DOES NOT RESPOND IS NOT A BIAS. Fitting
+    `l` to a band of a few thousand zeros returns a number whatever the density
+    says, and the difference between that number and the truth reads exactly
+    like a bias while being a statement that nothing was measured. The two are
+    told apart by asking whether the fit moves at all.
+
+    So: perturb the density by ONE GRID STEP's worth of curve difference at the
+    `l` it currently sits near --
+
+        density' = density + (C[j+1] - C[j])
+
+    -- and return how far the fitted `l` travels, in units of that step. One
+    means the estimator reports what it is given. Values far below one mean it
+    does not, and a residual measured there says nothing about the zeros.
+
+    Measured this way the gain collapses below about 10,000 zeros -- 0.349 at
+    N = 2,500, ten sigma from one -- which is what `MINIMUM_BAND` is for.
+
+    THE PERTURBATION IS A BANK ROW DIFFERENCE, not an analytic displacement,
+    because the bank is what the fit actually compares against. A perturbation
+    computed some other way would measure the agreement between two spellings of
+    the curve as well as the estimator's response, and only one of those is the
+    question.
+
+    `near` IS WHERE TO PERTURB, AND IT IS NOT A DETAIL. Left out, the step is
+    taken at the `l` the fit currently reports, which measures how responsive
+    the estimator is AT ITS OWN ANSWER. Given the `l` the data is actually at,
+    the step is taken there, which measures `d(fitted)/d(true)` -- the quantity
+    that decides whether a residual is a bias or a non-response.
+
+    WHERE THE FIT IS GOOD THESE AGREE, AND WHERE IT IS BAD THEY DO NOT, which
+    is precisely the regime this function exists for. At N = 2,500 zeros the
+    fitted `l` scatters by about 4, so the two anchorings land on different
+    parts of the grid and report 0.653 and 0.349 for the same slices. The
+    second is the one that answers the question; the first was measured first,
+    and the disagreement between two spellings of one quantity is how it was
+    caught.
+
+    So pass `near` whenever the true `l` is known -- which, in every use this
+    module has, it is.
+    """
+    grid = ell_grid() if grid is None else np.asarray(grid, dtype=float)
+    density = np.asarray(density, dtype=float)
+    if bank is None:
+        if edges is None:
+            raise ValueError("fit_gain needs either bin edges or a prebuilt bank")
+        bank = curve_bank(edges, grid, prime_limit=prime_limit)
+    curves = bank.curves if edges is None else bank.matching(edges, grid, prime_limit)
+
+    base = fit_ell(density, edges, grid=grid, prime_limit=prime_limit, bank=bank)
+    index = int(np.argmin(np.abs(grid - (base if near is None else float(near)))))
+    # At the top of the grid there is no next row to step to; step down instead
+    # and keep the sign, rather than returning a gain nothing measured.
+    if index >= len(grid) - 1:
+        index = len(grid) - 2
+    step = float(grid[index + 1] - grid[index])
+    moved = fit_ell(
+        density + (curves[index + 1] - curves[index]),
+        edges,
+        grid=grid,
+        prime_limit=prime_limit,
+        bank=bank,
+    )
+    return float((moved - base) / step)
 
 
 def narrow_ell_bands(
@@ -795,7 +1060,18 @@ def recover_height(
         intercept=float(intercept),
         bias=bias,
         bias_error=bias_error,
-        null_p=float(np.mean(null >= slope)),
+        # (r+1)/(n+1), NOT r/n. THE PLAIN FRACTION CAN RECORD EXACTLY ZERO, and a
+        # recorded 0.0 reads as "impossible under the null" when all it means is
+        # "below what NULL_DRAWS can resolve" -- a resolution limit presented as a
+        # measurement, which is the failure this repository keeps finding in other
+        # clothes. The +1 estimator is the standard Monte-Carlo p-value: it is an
+        # honest upper bound, it can never be zero, and it is conservative.
+        #
+        # IT MOVES THE RECORDED NUMBER. The run on file has one draw reaching the
+        # slope and read 1/20000 = 5.0e-5; it now reads 2/20001 = 1.0e-4. And note
+        # the collision worth not being confused by: ZERO draws now also reads
+        # 1/20001 = 5.0e-5, the same digits the old estimator gave for ONE draw.
+        null_p=float((int(np.sum(null >= slope)) + 1) / (len(null) + 1)),
     )
 
 

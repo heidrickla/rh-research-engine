@@ -111,3 +111,103 @@ def test_the_archimedean_term_is_the_stated_formula():
     n = np.array([10.0, 100.0])
     expected = (n / 2) * (np.log(n) - math.log(2 * math.pi) + 0.5772156649015329 - 1) + 1
     assert np.allclose(archimedean(n), expected, rtol=0, atol=0)
+
+
+# ---------------------------------------------------------------------------
+# The verdict used to come from a ball MIDPOINT.
+#
+# `li_coefficients` returns `(n, lambda_n, radius)` from one Arb ball, and `run`
+# counted negative midpoints while the radius sat in the metrics unread.
+# Measured: `--order 120 --bits 64` gives 48 negative midpoints whose balls have
+# radius up to 6e+24, so the experiment recorded `violated: 1.0` -- a claimed
+# refutation of the Riemann hypothesis -- from enclosures covering everything.
+# It failed the other way too: at 128 bits it recorded a clean `violated: 0.0`
+# with 14 balls straddling zero, having established nothing.
+# ---------------------------------------------------------------------------
+
+
+def test_a_refutation_must_be_proved_not_merely_negative():
+    """A negative midpoint inside a ball that covers zero is UNRESOLVED.
+
+    This is the case that recorded `violated: 1.0` before the repair. Forced from
+    a hand-built tuple rather than by hunting for parameters that happen to be
+    singular on the machine the suite runs on.
+    """
+    from rh_research_engine.experiments.li_criterion import classify
+
+    verdict, refuted, straddling = classify([(1, 0.023, 1e-30), (2, -22.9, 2.17e9)])
+    assert verdict == "UNRESOLVED", (verdict, refuted, straddling)
+    assert refuted == 0
+    assert straddling == 1
+
+
+def test_a_ball_wholly_below_zero_is_a_refutation():
+    """The other branch. `lambda + radius < 0` is the whole enclosure below zero,
+    which is the only thing that could honestly refute RH here."""
+    from rh_research_engine.experiments.li_criterion import classify
+
+    verdict, refuted, _ = classify([(1, 0.023, 1e-30), (2, -5.0, 0.5)])
+    assert verdict == "REFUTED", verdict
+    assert refuted == 1
+
+
+def test_every_ball_strictly_positive_is_positive():
+    from rh_research_engine.experiments.li_criterion import classify
+
+    assert classify([(1, 0.023, 1e-30), (2, 1.5, 1e-20)])[0] == "POSITIVE"
+
+
+def test_low_precision_is_unresolved_and_never_a_refutation():
+    """The real computation at a precision the CLI accepts.
+
+    `--order 120 --bits 64` is reachable from the command line. Measured: 48
+    negative midpoints, radii to 6e+24, 69 balls straddling zero. It must come
+    back UNRESOLVED and it must NOT come back REFUTED.
+    """
+    from rh_research_engine.experiments.li_criterion import classify
+
+    rows = li_coefficients(120, 64)
+    verdict, refuted, straddling = classify(rows)
+    assert verdict == "UNRESOLVED", (verdict, refuted, straddling)
+    assert refuted == 0, "a refutation of RH was claimed from rounding"
+    assert straddling > 0
+
+
+def test_a_clean_null_at_insufficient_precision_is_also_refused():
+    """The quieter half, and the one more likely to go unnoticed.
+
+    At 128 bits no midpoint is negative, so the old code recorded
+    `violated: 0.0` -- which reads as a falsification test that did not fire.
+    Fourteen balls straddle zero there, so it had established nothing either way.
+    A null from rounding is as wrong as a refutation from rounding.
+    """
+    from rh_research_engine.experiments.li_criterion import classify
+
+    rows = li_coefficients(120, 128)
+    assert all(value >= 0 for _, value, _ in rows), "no midpoint should be negative here"
+    verdict, _refuted, straddling = classify(rows)
+    assert verdict == "UNRESOLVED", verdict
+    assert straddling > 0
+
+
+def test_sufficient_precision_scales_with_the_order():
+    """Measured, not asserted: roughly `bits >= 1.4 * order`.
+
+    order 40 is safe from 64 bits, 80 from 128, and 120 from 160 -- all three
+    values the module's observations quote, so none of them is claimed without
+    being pinned here.
+
+    AND THE THRESHOLD IS PINNED FROM BELOW, which is the half that makes it a
+    threshold. That order 120 is POSITIVE at 160 bits shows only that 160 is
+    enough; it says nothing about 160 being NEEDED, and a test that cannot fail
+    when the requirement drops is not measuring a requirement. One step below,
+    at 128 bits, 14 balls straddle zero and the verdict must be UNRESOLVED.
+    """
+    from rh_research_engine.experiments.li_criterion import classify
+
+    assert classify(li_coefficients(40, 64))[0] == "POSITIVE"
+    assert classify(li_coefficients(80, 128))[0] == "POSITIVE"
+    assert classify(li_coefficients(120, 160))[0] == "POSITIVE"
+    # Below the rule, the verdict must refuse rather than quietly succeed.
+    assert classify(li_coefficients(120, 128))[0] == "UNRESOLVED"
+    assert classify(li_coefficients(80, 64))[0] == "UNRESOLVED"

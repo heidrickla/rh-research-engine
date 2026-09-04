@@ -228,6 +228,24 @@ def sweep(
     Not a table anyone assembled for it: every callable the indexed corpus uses,
     derived arithmetic nobody asked for, both sides of every inequality the
     corpus asserts, and the zeros.
+
+    WHAT `--top` COSTS, measured because nobody had written it down and it is
+    not guessable from the default:
+
+        --top   1,000      21 s        (the default)
+        --top   2,000      39 s
+        --top   4,000      89 s
+        --top  20,000      51 min, peak 2.0 GB
+
+    Roughly linear to about 4,000 and superlinear beyond it. THE THREE SMALL
+    POINTS DO NOT PREDICT THE LARGE ONE: their log-log slope is 1.03, which
+    extrapolates to 7.5 minutes at 20,000 and is wrong by a factor of seven.
+    Three doublings cannot show that an exponent is not constant, so a fourth
+    was estimated from a trend that had not been established over the range it
+    was read at -- which is the failure this repository keeps finding in its own
+    numbers, committed here while measuring a cost before spending it.
+
+    Budget from the table, not from the slope.
     """
     columns = CorpusColumns(top)
     console.print(f"[dim]shortcuts verified at {', '.join(columns.verify_shortcuts())}[/]")

@@ -31,6 +31,7 @@ from .experiments import (
     correlation_scan,
     counterterm_discovery,
     exponent_scan,
+    fit_bias_lab,
     gamma_filter,
     height_recovery_lab,
     li_criterion,
@@ -1760,6 +1761,35 @@ def exp_height_recovery(
         ladder=ladder,
         zeros=zeros,
     )
+    _store().append_experiment(result)
+    _emit(result)
+
+
+@experiment_app.command("fit-bias-lab")
+def exp_fit_bias_lab(
+    ladder: str = typer.Option(
+        None, "--ladder", help="An .npz of prebuilt rungs from build-ladder.py."
+    ),
+    zeros: str = typer.Option(
+        None, "--zeros", help="An .npy of ordinates, to measure the low bands."
+    ),
+    max_slices: int = typer.Option(
+        None, "--max-slices", help="Cap slices per cell. A full run is ~15 minutes."
+    ),
+) -> None:
+    """How wrong fit_ell is at a known height, as a function of band size.
+
+    NO DEFAULT PATH, deliberately. A default resolving to a file that exists in
+    two home directories would make the same command silently measure on one box
+    and silently refuse on another, and those must not print the same. Absent
+    both artifacts it REFUSES: `refused: 1.0` and no `bias_at_*` key at all, so
+    nothing downstream can read a refusal as a flat b(N).
+
+    The gain, railing and slice cuts stay module constants rather than options:
+    they encode what counts as a measurement, and making them arguments invites
+    a run that reports b over cells where the estimator does not respond.
+    """
+    result = fit_bias_lab.run(ladder=ladder, zeros=zeros, max_slices=max_slices)
     _store().append_experiment(result)
     _emit(result)
 
