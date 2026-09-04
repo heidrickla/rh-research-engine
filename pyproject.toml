@@ -35,7 +35,7 @@ dependencies = [
 # reasoning as the runtime dependencies: it decides whether a DRE receipt is
 # genuine, so which version made that decision is part of the engine identity.
 dev = [
-  "pytest==9.0.3",
+  "pytest==9.1.1",
   # Pinned like the rest: it decides how the suite is scheduled, and a suite
   # that passes serially and fails under a different worker count is a finding
   # about the suite, so which version made that split is worth recording.
