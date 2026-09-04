@@ -1785,9 +1785,18 @@ def exp_fit_bias_lab(
     both artifacts it REFUSES: `refused: 1.0` and no `bias_at_*` key at all, so
     nothing downstream can read a refusal as a flat b(N).
 
-    The gain, railing and slice cuts stay module constants rather than options:
-    they encode what counts as a measurement, and making them arguments invites
-    a run that reports b over cells where the estimator does not respond.
+    SIX PARAMETERS ARE DELIBERATELY NOT OPTIONS, and naming them is the point:
+    `gain_low`, `gain_high`, `max_railed`, `min_slices`, `prime_limit` and
+    `counts`. The first five encode what counts as a measurement -- the gain
+    window a cell must sit in, how many fits may be censored at the grid edge,
+    and how many slices a cell needs before its mean means anything. Exposing
+    them invites a run that reports b over cells where the estimator does not
+    respond, which is not a bias but a statement that nothing was measured.
+    `counts` is the ladder of band sizes the whole b(N) curve is defined over;
+    a run with a different ladder is a different experiment, not this one
+    reconfigured.
+
+    Change them in the module, with a reason, or not at all.
     """
     result = fit_bias_lab.run(ladder=ladder, zeros=zeros, max_slices=max_slices)
     _store().append_experiment(result)
