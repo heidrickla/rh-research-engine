@@ -1,0 +1,68 @@
+# Dependabot, configured to respect which pins are part of the engine identity.
+#
+# WHY THIS FILE EXISTS. A Dependabot PR bumped `cryptography` 48.0.1 -> 50.0.0
+# and merging it was correct: cryptography authenticates a signature and its
+# version is recorded nowhere, so staying current on a security library costs
+# nothing. But nothing in the repository distinguished that dependency from the
+# ones where a bump is a research event, and the next PR might not have been so
+# harmless.
+#
+# `pyproject.toml` states the distinction plainly: "SymPy is the sharp case.
+# `srepr` output *is* the formula fingerprint, and `cancel`/`simplify`/`limit`
+# decide what counts as an equivalence, so a SymPy bump can silently change
+# every stored canonical hash and every equivalence verdict. NumPy reductions
+# decide the last bits of every metric." And: "Changing any of these is a
+# deliberate act: expect stored fingerprints and payload hashes to need
+# re-recording, and say so in the commit."
+#
+# A merged bot PR is the opposite of a deliberate act. So the four
+# identity-bearing pins take no ROUTINE version updates here.
+#
+# SECURITY UPDATES STILL ARRIVE. Naming `update-types` restricts the ignore to
+# version updates only; Dependabot raises security advisories regardless. That
+# is the intended asymmetry -- a known vulnerability is worth a re-record, a
+# patch release is not.
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    ignore:
+      # `srepr` output IS the formula fingerprint; `cancel`/`simplify`/`limit`
+      # decide equivalence. A bump re-writes stored hashes and verdicts.
+      - dependency-name: "sympy"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+          - "version-update:semver-patch"
+      # Reductions decide the last bits of every recorded metric.
+      - dependency-name: "numpy"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+          - "version-update:semver-patch"
+      # The precision floor under every mpmath-evaluated formula.
+      - dependency-name: "mpmath"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+          - "version-update:semver-patch"
+      # Arb decides whether an enclosure holds, and the certificate RECORDS the
+      # version that decided. Bumping it changes what a certificate means.
+      - dependency-name: "python-flint"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+          - "version-update:semver-patch"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  # Not covered here and worth knowing: the self-hosted forge runs the same
+  # workflow, and its `setup-python` toolcache is a volume shared between
+  # repositories. Dependabot cannot see that, and it is why the workflow sets
+  # `PYTEST_DISABLE_PLUGIN_AUTOLOAD`.
