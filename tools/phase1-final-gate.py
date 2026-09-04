@@ -82,8 +82,15 @@ def _pytest(*args: str, parallel: bool = False) -> list[str]:
 
     xdist costs a few seconds of interpreter startup per worker, so the
     targeted `-k` steps below are faster serially; the full suite is not.
+
+    NAMING xdist EXPLICITLY is not decoration: CI runs with
+    `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1`, because the runner's `setup-python`
+    toolcache is a Docker volume shared between repositories and another repo's
+    `pytest-aiohttp` was being autoloaded into this suite and crashing it. With
+    autoload off, `-n auto` is an unrecognised argument unless the plugin
+    providing it is loaded by name.
     """
-    workers = ["-n", "auto"] if parallel else []
+    workers = ["-p", "xdist", "-n", "auto"] if parallel else []
     return [sys.executable, "-m", "pytest", "-q", *workers, *args]
 
 

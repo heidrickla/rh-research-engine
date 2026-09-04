@@ -1,5 +1,25 @@
 name: CI
 
+# WORKFLOW-WIDE, BECAUSE THE TEST STEP IS NOT THE ONLY THING THAT RUNS PYTEST.
+# `setup-python`'s toolcache is a Docker volume SHARED BETWEEN REPOSITORIES on
+# the self-hosted forge. Another repo's job installed aiohttp/aiodns into the
+# py3.13 toolcache -- 321 packages against py3.12's 67 -- and pytest autoloads
+# every plugin it finds installed, so `pytest_aiohttp` was imported into our run
+# and died on `AttributeError: module 'pycares' has no attribute
+# 'ares_query_a_result'` before any project code executed.
+#
+# Scoping this to the Test step was not enough: `tools/assumption-guard.py`
+# shells out to `python -m pytest --collect-only` to prove every registered
+# assumption still names a test that EXISTS. That subprocess inherited the
+# contaminated environment, collected nothing, and the guard correctly refused
+# with "pytest collected nothing; the tested check cannot run" -- a floor doing
+# its job rather than passing vacuously.
+#
+# At workflow level every step and every subprocess is covered. The one plugin
+# this project declares is named explicitly where it is needed (`-p xdist`).
+env:
+  PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
+
 on:
   push:
     # Integration branches are included deliberately. Work accumulates on
@@ -177,8 +197,6 @@ jobs:
         # declared dependency, so that only ever held when the environment
         # happened to supply it -- which is the same defect. xdist distributing
         # by file still varies order; if randomization is wanted, declare it.
-        env:
-          PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
         run: pytest -q -n auto -p xdist
 
       # Durable memory is the authoritative research record. If its seal, its
