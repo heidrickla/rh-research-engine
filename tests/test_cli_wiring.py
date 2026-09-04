@@ -72,6 +72,17 @@ def _tracked_experiments() -> frozenset[str]:
 
     Returns an empty set when git cannot answer, which the floor test below
     turns into a failure rather than a silent full skip.
+
+    THE SCOPE IS THE INDEX, NOT HEAD, AND THAT IS ONE STAGING EARLIER THAN IT
+    SOUNDS. `git ls-files` reads the index, so a file that has been `git add`ed
+    and never committed IS judged -- verified by staging a throwaway experiment
+    and watching it appear. A commit message in this repository claims the check
+    on new work "arrives one commit late"; that is wrong, and it is corrected
+    here rather than there because this is where the next reader looks.
+
+    The practical consequence is an ordering, not a limitation: stage, then run
+    the suite, then commit. `fit_bias_lab` failed in CI only because the suite
+    was run before `git add`, when the file was genuinely invisible.
     """
     import subprocess
 
