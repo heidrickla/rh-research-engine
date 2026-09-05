@@ -101,7 +101,7 @@ jobs:
         # exactly where it was and saves about 22 minutes of runner time.
         python-version: ['3.12', '3.13']
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
@@ -290,7 +290,7 @@ jobs:
         # there, so one script serves both platforms.
         shell: bash
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
@@ -395,20 +395,28 @@ jobs:
       # stragglers to v7, which would have left three versions of `checkout` in
       # the file instead of two.
       #
-      # v5/v6 rather than v7, which is current for both -- but NOT for the
-      # reason first written here. That said "the self-hosted runner's act
-      # implementation is the constraint", which was a guess at the wrong
-      # variable. The constraint is the NODE RUNTIME an action declares, and
-      # checking it settles the question: checkout v5 and v7 both declare
-      # node24, setup-python v6 and v7 both declare node24, and v5/v6 run on the
-      # forge today. So node24 is already proven there and v7 carries no runtime
-      # risk.
+      # v7 across the board, and the reason recorded here twice before was
+      # wrong both times. First: "the self-hosted runner's act implementation is
+      # the constraint" -- a guess at the wrong variable. Second: "v5/v6 are the
+      # versions proven on both forges" -- true when written, and it stopped
+      # being a reason the moment the question was actually checked.
       #
-      # What v7 would still need watching for is behaviour, not support. The
-      # real forge-specific hazard is `upload-artifact`, where v4+ refuses
-      # client-side on any non-github.com server -- a policy, not a runtime --
-      # which is why that step carries `continue-on-error`.
-      - uses: actions/checkout@v5
+      # The constraint is the NODE RUNTIME an action declares, which the
+      # published `action.yml` states outright:
+      #
+      #     actions/checkout        v5 node24    v7 node24
+      #     actions/setup-python    v6 node24    v7 node24
+      #     actions/upload-artifact v4 node20    v7 node24
+      #
+      # v5/v6 already ran on the forge, so node24 was proven there and v7 never
+      # carried runtime risk on any of the three.
+      #
+      # WHAT DOES DIFFER IS BEHAVIOUR, NOT SUPPORT, and only for one:
+      # `upload-artifact` v4+ refuses client-side on any server that is not
+      # github.com. That is a policy the action enforces rather than a
+      # capability the runner lacks, and it is why that step carries
+      # `continue-on-error` -- v7 refuses identically and fails just as softly.
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
@@ -443,7 +451,7 @@ jobs:
     # report for a merged state, so a merged state is when to produce it.
     if: github.event_name != 'pull_request'
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           # The gate reads the frozen df7016d baseline tag, which a shallow
           # clone does not fetch.
