@@ -102,7 +102,7 @@ jobs:
         python-version: ['3.12', '3.13']
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
@@ -291,7 +291,7 @@ jobs:
         shell: bash
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
           cache: pip
@@ -409,7 +409,7 @@ jobs:
       # client-side on any non-github.com server -- a policy, not a runtime --
       # which is why that step carries `continue-on-error`.
       - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - run: pip install -e ".[dev]"
@@ -448,7 +448,7 @@ jobs:
           # The gate reads the frozen df7016d baseline tag, which a shallow
           # clone does not fetch.
           fetch-depth: 0
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
           cache: pip
