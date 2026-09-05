@@ -395,10 +395,19 @@ jobs:
       # stragglers to v7, which would have left three versions of `checkout` in
       # the file instead of two.
       #
-      # NOT v7, which is current: these versions are the ones proven to run on
-      # BOTH forges today, and the self-hosted runner's act implementation is
-      # the constraint Dependabot cannot see. Moving to v7 is a separate change
-      # that has to be watched on gitea.
+      # v5/v6 rather than v7, which is current for both -- but NOT for the
+      # reason first written here. That said "the self-hosted runner's act
+      # implementation is the constraint", which was a guess at the wrong
+      # variable. The constraint is the NODE RUNTIME an action declares, and
+      # checking it settles the question: checkout v5 and v7 both declare
+      # node24, setup-python v6 and v7 both declare node24, and v5/v6 run on the
+      # forge today. So node24 is already proven there and v7 carries no runtime
+      # risk.
+      #
+      # What v7 would still need watching for is behaviour, not support. The
+      # real forge-specific hazard is `upload-artifact`, where v4+ refuses
+      # client-side on any non-github.com server -- a policy, not a runtime --
+      # which is why that step carries `continue-on-error`.
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v6
         with:
