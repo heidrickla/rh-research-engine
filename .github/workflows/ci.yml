@@ -101,7 +101,7 @@ jobs:
         # exactly where it was and saves about 22 minutes of runner time.
         python-version: ['3.12', '3.13']
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
@@ -290,7 +290,7 @@ jobs:
         # there, so one script serves both platforms.
         shell: bash
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
@@ -408,7 +408,7 @@ jobs:
       # real forge-specific hazard is `upload-artifact`, where v4+ refuses
       # client-side on any non-github.com server -- a policy, not a runtime --
       # which is why that step carries `continue-on-error`.
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
@@ -443,7 +443,7 @@ jobs:
     # report for a merged state, so a merged state is when to produce it.
     if: github.event_name != 'pull_request'
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           # The gate reads the frozen df7016d baseline tag, which a shallow
           # clone does not fetch.
